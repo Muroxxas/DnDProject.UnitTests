@@ -11,6 +11,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using FluentAssertions;
 
 namespace DnDProject.UnitTests.Repository
 {
@@ -63,13 +64,15 @@ namespace DnDProject.UnitTests.Repository
                 //4. Create a instance of MySqlDataRepository, injecting mockContext via the constructor.
                 IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
                 var expected = CreateTestData.getSampleCharacter();
-                var Actual = toTest.GetCharacterBy_CharacterID(expected.Character_id);
+                var actual = toTest.GetCharacterBy_CharacterID(expected.Character_id);
 
 
                 //Assert
-                Assert.IsNotNull(expected);
-                Assert.IsNotNull(Actual);
-                Assert.AreEqual(Actual.Character_id, expected.Character_id);
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Character>();
+                expected.Should().BeOfType<Character>();
+                actual.Should().BeEquivalentTo(expected);
             }
         }
 
@@ -96,10 +99,11 @@ namespace DnDProject.UnitTests.Repository
                 var actual = toTest.GetCharacterBy_CharacterID(expected.Character_id);
 
                 //Assert
-                Assert.IsNotNull(expected);
-                Assert.IsNotNull(actual);
-                Assert.AreEqual(expected.Character_id, actual.Character_id);
-
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Character>();
+                expected.Should().BeOfType<Character>();
+                actual.Should().BeEquivalentTo(expected);
             }
         }
 
