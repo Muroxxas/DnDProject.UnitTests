@@ -315,5 +315,105 @@ namespace DnDProject.UnitTests.Repository
 
         }
 
+        [Test]
+        public void MySqlDataRepository_AddHealthRecord_ValidCall()
+        {
+            //Arrange
+            List<Health> healthList = CreateTestData.GetListOfHealth();
+            var mockSet = new Mock<DbSet<Health>>()
+                .SetupData(healthList, o =>
+                {
+                    return healthList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose()) {
+                var expected = CreateTestData.GetSampleHealth();
+                var id = Guid.Parse("b346eee6-eba7-4ea7-be2e-911bb9034233");
+                expected.Character_id = id;
+
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.HealthRecords).Returns(mockSet.Object);
+
+                //Act
+                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                toTest.AddHealthRecord(expected);
+                var actual = toTest.GetHealthRecord(id);
+
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Health>();
+                expected.Should().BeOfType<Health>();
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+        [Test]
+        public void MySqlDataRepository_GetHealthRecord_ValidCall()
+        {
+            //Arrange
+            List<Health> healthList = CreateTestData.GetListOfHealth();
+            var mockSet = new Mock<DbSet<Health>>()
+                .SetupData(healthList, o =>
+                {
+                    return healthList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleHealth();
+                var id = expected.Character_id;
+
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.HealthRecords).Returns(mockSet.Object);
+
+                //Act
+                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                var actual = toTest.GetHealthRecord(id);
+
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Health>();
+                expected.Should().BeOfType<Health>();
+                actual.Should().BeEquivalentTo(expected);
+            }
+
+        }
+        [Test]
+        public void MySqlDataRepository_UpdateHealthRecord_ValidCall()
+        {
+            //Arrange
+            int saveChanges = 0;
+            List<Health> healthList = CreateTestData.GetListOfHealth();
+            var mockSet = new Mock<DbSet<Health>>()
+                .SetupData(healthList, o =>
+                {
+                    return healthList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+            using (var mockContext = AutoMock.GetLoose()) {
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.HealthRecords).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
+
+                var expected = CreateTestData.GetSampleHealth();
+                expected.MaxHP = 200;
+                expected.DeathSaveSuccesses = 2;
+                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+
+
+                //Act
+                toTest.UpdateHealthRecord(expected);
+                toTest.SaveChanges();
+                var actual = toTest.GetHealthRecord(expected.Character_id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Health>();
+                expected.Should().BeOfType<Health>();
+                Assert.AreEqual(1, saveChanges);
+
+            }
+        }
     }
 }

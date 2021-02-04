@@ -136,5 +136,39 @@ namespace DnDProject.UnitTests
 
             return proficiencyList;
         }
+
+        public static Health GetSampleHealth()
+        {
+            Health health = new Health
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                MaxHP = 50,
+                CurrentHP = 25,
+                TempHP = 0,
+                DeathSaveSuccesses = 0,
+                DeathSaveFails = 0
+            };
+            return health;
+        }
+
+        public static List<Health> GetListOfHealth()
+        {
+            List<Health> listOfHealth = new List<Health>();
+            listOfHealth.Add(GetSampleHealth());
+
+            var Percy = GetSampleHealth();
+            Percy.Character_id = Guid.Parse("55555555-4444-3333-2222-111111111111");
+            Percy.MaxHP = 40;
+            Percy.CurrentHP = 35;
+            listOfHealth.Add(Percy);
+
+            var Grog = GetSampleHealth();
+            Grog.Character_id = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+            Grog.MaxHP = 100;
+            Grog.CurrentHP = 100;
+            listOfHealth.Add(Grog);
+
+            return listOfHealth;
+        }
     }
 }

@@ -122,5 +122,23 @@ namespace DnDProject.UnitTests.Mapping
 
 
         }
+
+        [Test]
+        public void CharacterMapper_MapUpdatedHealthRecordOverEntity_ItemsAreEquivalent()
+        {
+            //Arrange
+            var expected = CreateTestData.GetSampleHealth();
+            var actual = new Health();
+
+            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
+            toTest.mapUpdatedHealthRecordOverEntity(expected, actual);
+
+            //Assert
+            actual.Should().BeOfType<Health>();
+            actual.Should().NotBeNull();
+            expected.Should().BeOfType<Health>();
+            expected.Should().NotBeNull();
+            actual.Should().BeEquivalentTo(expected);
+        }
     }
 }
