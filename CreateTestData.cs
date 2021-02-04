@@ -79,5 +79,62 @@ namespace DnDProject.UnitTests
             return listOfCharacters;
 
         }
+
+        public static IsProficient GetSampleIsProficient()
+        {
+            IsProficient isProficient = new IsProficient
+            {
+
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                StrengthSave = true,
+                DexteritySave = true,
+                ConstitutionSave = true,
+                IntelligenceSave = false,
+                WisdomSave = false,
+                CharismaSave = false,
+
+                Acrobatics = true,
+                AnimalHandling = true,
+                Arcana = true,
+                Athletics = true,
+                Deception = true,
+
+                History = false,
+                Intimidation = false,
+                Investigation = false,
+                Medicine = false,
+                Nature = false,
+
+                Perception = true,
+                Performance = true,
+                Persuasion = true,
+                Religion = true,
+                SleightOfHand = true,
+
+                Stealth = false,
+                Survival = false
+            };
+
+            return isProficient;
+        }
+        public static List<IsProficient> GetListOfIsProficient()
+        {
+            List<IsProficient> proficiencyList = new List<IsProficient>();
+
+            var Vax = GetSampleIsProficient();
+            var Percy = GetSampleIsProficient();
+            Percy.Character_id = Guid.Parse("55555555-4444-3333-2222-111111111111");
+            Percy.AnimalHandling = false;
+
+            var Gilmore = GetSampleIsProficient();
+            Gilmore.Character_id = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+            Gilmore.Survival = true;
+
+            proficiencyList.Add(Vax);
+            proficiencyList.Add(Percy);
+            proficiencyList.Add(Gilmore);
+
+            return proficiencyList;
+        }
     }
 }

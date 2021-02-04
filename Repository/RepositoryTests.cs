@@ -64,7 +64,7 @@ namespace DnDProject.UnitTests.Repository
                 //4. Create a instance of MySqlDataRepository, injecting mockContext via the constructor.
                 IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
                 var expected = CreateTestData.getSampleCharacter();
-                var actual = toTest.GetCharacterBy_CharacterID(expected.Character_id);
+                var actual = toTest.GetCharacter(expected.Character_id);
 
 
                 //Assert
@@ -77,7 +77,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_AddCharacterToDb_CharacterAdded()
+        public void MySqlDataRepository_AddCharacter_ValidCall()
         {
             //Arrange
             int saveChanges = 0;
@@ -101,9 +101,9 @@ namespace DnDProject.UnitTests.Repository
                 expected.Character_id = Guid.Parse("33855fe6-807a-46e3-850f-ada7dacfc435");
 
                 //Act
-                toTest.InsertCharacterIntoDb(expected);
+                toTest.AddCharacter(expected);
                 toTest.SaveChanges();
-                var actual = toTest.GetCharacterBy_CharacterID(expected.Character_id);
+                var actual = toTest.GetCharacter(expected.Character_id);
 
                 //Assert
                 actual.Should().NotBeNull();
@@ -155,7 +155,7 @@ namespace DnDProject.UnitTests.Repository
 
                 Guid id = expected.Character_id;
 
-                var actual = toTest.GetCharacterBy_CharacterID(id);
+                var actual = toTest.GetCharacter(id);
 
                 //Assert
                 actual.Should().NotBeNull();
@@ -168,6 +168,152 @@ namespace DnDProject.UnitTests.Repository
             }
         }
 
+        [Test]
+        public void MySqlDataRepository_DeleteCharacter_ValidCall()
+        {
+            //Arrange
+
+            List<Character> charList = CreateTestData.GetListOfCharacters();
+            var mockSet = new Mock<DbSet<Character>>()
+                .SetupData(charList, o =>
+                {
+                    return charList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<CharacterContext>()
+                   .Setup(x => x.Characters).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>()
+                    //When a removal of a Character object is called, perform a callback to the charList collection, using the same character object as an argument.
+                    //This callback then fires, removing the object from the list.
+                    .Setup(x => x.Characters.Remove(It.IsAny<Character>()))
+                        .Callback<Character>((entity) => charList.Remove(entity));
+
+                //Act
+                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                var id = CreateTestData.getSampleCharacter().Character_id;
+                toTest.DeleteCharacter(id);
+                Character expected = null;
+                var NotExpected = CreateTestData.getSampleCharacter();
+                var actual = charList.Find(character => character.Character_id == id);
+
+                //Assert
+                actual.Should().BeNull();
+                actual.Should().NotBeEquivalentTo(NotExpected);
+                actual.Should().BeEquivalentTo(expected);
+
+
+            }
+        }
+
+        [Test]
+        public void MySqlDataRepository_AddIsProficient_ValidCall()
+        {
+            //Arrange
+            List<IsProficient> proficiencyList = CreateTestData.GetListOfIsProficient();
+            var mockSet = new Mock<DbSet<IsProficient>>()
+                .SetupData(proficiencyList, o =>
+                {
+                    return proficiencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.Proficiencies).Returns(mockSet.Object);
+                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+
+                //Act
+                var GrogProficiencies = CreateTestData.GetSampleIsProficient();
+                GrogProficiencies.Character_id = Guid.Parse("c95a4b3e-340c-4ac4-86e0-784bb8c1b87c");
+
+                toTest.AddProficiencyRecord(GrogProficiencies);
+
+                var actual = toTest.GetProficiencyRecord(GrogProficiencies.Character_id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<IsProficient>();
+                actual.Should().BeEquivalentTo(GrogProficiencies);
+
+            }
+        }
+
+        [Test]
+        public void MySqlDataRepository_GetProficiencyRecord_ValidCall()
+        {
+            //Arrange
+            List<IsProficient> proficiencyList = CreateTestData.GetListOfIsProficient();
+            var mockSet = new Mock<DbSet<IsProficient>>()
+                .SetupData(proficiencyList, o =>
+                {
+                    return proficiencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.Proficiencies).Returns(mockSet.Object);
+                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+
+                var id = Guid.Parse("11111111-2222-3333-4444-555555555555");
+                var expected = CreateTestData.GetSampleIsProficient();
+
+                //Act
+                var actual = toTest.GetProficiencyRecord(id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<IsProficient>();
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+
+        [Test]
+        public void MySqlDataRepository_UpdateProficiencyRecord_ValidCall()
+        {
+            //Arrange
+            int saveChanges = 0;
+            List<IsProficient> proficienciesList = CreateTestData.GetListOfIsProficient();
+            var mockSet = new Mock<DbSet<IsProficient>>()
+                .SetupData(proficienciesList, o =>
+                {
+                    return proficienciesList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleIsProficient();
+                expected.StrengthSave = false;
+                expected.DexteritySave = false;
+                expected.ConstitutionSave = false;
+
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.Proficiencies).Returns(mockSet.Object);
+
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
+
+                //Act
+                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                toTest.UpdateProficiencyRecord(expected);
+                toTest.SaveChanges();
+
+                var actual = toTest.GetProficiencyRecord(expected.Character_id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<IsProficient>();
+                expected.Should().BeOfType<IsProficient>();
+                Assert.AreEqual(1, saveChanges);
+
+            }
+
+        }
 
     }
 }

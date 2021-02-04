@@ -100,5 +100,27 @@ namespace DnDProject.UnitTests.Mapping
 
 
         }
+
+        [Test]
+        public void CharacterMapper_MapUpdatedProficiencyRecordOverEntity_ItemsAreEquivalent()
+        {
+
+            //Arrange
+            var expected = CreateTestData.GetSampleIsProficient();
+            var actual = new IsProficient();
+
+            //Act
+            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
+            toTest.mapUpdatedProficiencyRecordOverEntity(expected, actual);
+
+            //Assert
+            actual.Should().BeOfType<IsProficient>();
+            actual.Should().NotBeNull();
+            expected.Should().BeOfType<IsProficient>();
+            expected.Should().NotBeNull();
+            actual.Should().BeEquivalentTo(expected);
+
+
+        }
     }
 }
