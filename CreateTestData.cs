@@ -42,5 +42,42 @@ namespace DnDProject.UnitTests
 
             return character;
         }
+
+        public static List<Character> GetListOfCharacters()
+        {
+            List<Character> listOfCharacters = new List<Character>();
+
+            Character Vax = getSampleCharacter();
+            listOfCharacters.Add(Vax);
+
+            Character Percy = new Character
+            {
+                Character_id = Guid.Parse("55555555-4444-3333-2222-111111111111"),
+                User_id = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                Name = "Percy de Rolo III",
+                Race_id = Guid.Parse("00000000-9999-8888-7777-666666666666"),
+                Alignment = "Chaotic Good",
+                Exp = 0,
+                Background = "Noble",
+                Inspiration = false
+            };
+            listOfCharacters.Add(Percy);
+
+            Character Gilmore = new Character
+            {
+                Character_id = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                User_id = Guid.Parse("00000000-9999-8888-7777-666666666666"),
+                Name = "Percy de Rolo III",
+                Race_id = Guid.Parse("55555555-4444-3333-2222-111111111111"),
+                Alignment = "Chaotic Good",
+                Exp = 0,
+                Background = "Merchant",
+                Inspiration = false
+            };
+            listOfCharacters.Add(Gilmore);
+
+            return listOfCharacters;
+
+        }
     }
 }

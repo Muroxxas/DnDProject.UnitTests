@@ -26,6 +26,11 @@ namespace DnDProject.UnitTests.Mapping
             //Act
             var actual = toTest.mapCharacterToCharacterVM(m);
 
+            //Assert
+            expected.Should().BeOfType<CharacterVM>();
+            actual.Should().BeOfType<CharacterVM>();
+            actual.Should().NotBeNull();
+            expected.Should().NotBeNull();
             actual.Should().BeEquivalentTo(expected);
 
         }
@@ -43,6 +48,9 @@ namespace DnDProject.UnitTests.Mapping
 
             //Assert
             actual.Should().BeOfType<Character>();
+            expected.Should().BeOfType<CharacterVM>();
+            actual.Should().NotBeNull();
+            expected.Should().NotBeNull();
             actual.Should().BeEquivalentTo<CharacterVM>(expected);
         }
 
@@ -58,12 +66,38 @@ namespace DnDProject.UnitTests.Mapping
             //Act
             toTest.mapCharacterVMToExistingEntity(vm, actual);
 
+            //Assert
             actual.Should().BeOfType<Character>();
-            actual.Should().BeEquivalentTo(vm);
+            expected.Should().BeOfType<Character>();
+            actual.Should().NotBeNull();
+            expected.Should().NotBeNull();
+            actual.Should().BeEquivalentTo(vm);            
 
             //VM doesn't have the user id, and we don't want it to, so it is excluded
             actual.Should().BeEquivalentTo(expected, options => options.Excluding(item => item.User_id));
             
+
+        }
+
+        [Test]
+        public void CharacterMapper_MapUpdatedCharacterOverEntity_ItemsAreEquivalent()
+        {
+            //Arrange
+            var expected = CreateTestData.getSampleCharacter();
+            var actual = new Character();
+            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
+
+            //Act
+            toTest.mapUpdatedCharacterOverEntity(expected, actual);
+
+
+            //Assert
+            actual.Should().BeOfType<Character>();
+            expected.Should().BeOfType<Character>();
+            actual.Should().NotBeNull();
+            expected.Should().NotBeNull();
+            actual.Should().BeEquivalentTo(expected);
+
 
         }
     }

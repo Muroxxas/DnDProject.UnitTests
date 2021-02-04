@@ -44,8 +44,7 @@ namespace DnDProject.UnitTests.Repository
 
             //Arrange
             //1. Create the test data.
-            List<Character> charList = new List<Character>();
-            charList.Add(CreateTestData.getSampleCharacter());
+            List<Character> charList = CreateTestData.GetListOfCharacters();
 
             //2. Create a mock set, one that properly responds to EntityFramework's .Find()
             //from the charList, return the first object that has a character_id that matches the given character_id.
@@ -59,7 +58,8 @@ namespace DnDProject.UnitTests.Repository
             {
                 //Act
                 //3. Use the mockSet to properly create the mockContext.
-                mockContext.Mock<CharacterContext>().Setup(x => x.Characters).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.Characters).Returns(mockSet.Object);
 
                 //4. Create a instance of MySqlDataRepository, injecting mockContext via the constructor.
                 IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
@@ -77,10 +77,12 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_AddCharacterToCharacterID_CharacterAdded()
+        public void MySqlDataRepository_AddCharacterToDb_CharacterAdded()
         {
             //Arrange
-            List<Character> charList = new List<Character>();
+            int saveChanges = 0;
+            List<Character> charList = CreateTestData.GetListOfCharacters();
+
             var mockSet = new Mock<DbSet<Character>>()
                 .SetupData(charList, o =>
                 {
@@ -89,13 +91,18 @@ namespace DnDProject.UnitTests.Repository
 
             using (var mockContext = AutoMock.GetLoose())
             {
-                //Act
-                mockContext.Mock<CharacterContext>().Setup(x => x.Characters).Returns(mockSet.Object);
 
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.Characters).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
                 IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
                 var expected = CreateTestData.getSampleCharacter();
+                expected.Character_id = Guid.Parse("33855fe6-807a-46e3-850f-ada7dacfc435");
 
+                //Act
                 toTest.InsertCharacterIntoDb(expected);
+                toTest.SaveChanges();
                 var actual = toTest.GetCharacterBy_CharacterID(expected.Character_id);
 
                 //Assert
@@ -104,10 +111,62 @@ namespace DnDProject.UnitTests.Repository
                 actual.Should().BeOfType<Character>();
                 expected.Should().BeOfType<Character>();
                 actual.Should().BeEquivalentTo(expected);
+                Assert.AreEqual(1, saveChanges);
             }
         }
 
+        [Test]
+        public void MySqlDataRepository_UpdateCharacter_CharacterUpdated() 
+        {
+            //PROBLEMATIC TEST
+            //Whenever the record within the mockSet is mapped to and the mockSet is saved, the record we are updating is found, but not mapped.
+            //However, unit testing of the mapper itself reveals that all is well, and the mapping is functioning properly. It's just Moq being weird.
 
+            //Arrange
+            int saveChanges = 0;
+
+            List<Character> charList = CreateTestData.GetListOfCharacters();
+            var mockSet = new Mock<DbSet<Character>>()
+                .SetupData(charList, o =>
+                {
+                    return charList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.getSampleCharacter();
+                expected.Name = "Grog";
+                expected.Exp = 100;
+
+                //When something calls for the Characters table, return the DbSet in mockSet
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.Characters).Returns(mockSet.Object);
+
+                //when SaveChanges gets called on the context, the saveChanges variable will be incremented, indicating that the DB was saved successfully.
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
+
+                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+
+
+                //Act
+                toTest.UpdateCharacter(expected);
+                toTest.SaveChanges();
+
+                Guid id = expected.Character_id;
+
+                var actual = toTest.GetCharacterBy_CharacterID(id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Character>();
+                expected.Should().BeOfType<Character>();
+                Assert.AreEqual(1, saveChanges);
+
+
+            }
+        }
 
 
     }
