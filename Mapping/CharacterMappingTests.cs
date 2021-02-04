@@ -140,5 +140,24 @@ namespace DnDProject.UnitTests.Mapping
             expected.Should().NotBeNull();
             actual.Should().BeEquivalentTo(expected);
         }
+        [Test]
+        public void CharacterMapper_MapUpdatedStatsRecordOverEntity_ItemsAreEquivalent()
+        {
+            //Arrange
+            var expected = CreateTestData.GetSampleStats();
+            var actual =new Stats();
+            //Act
+            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
+            toTest.mapUpdatedStatsRecordOverEntity(expected, actual);
+
+            //Assert
+            actual.Should().BeOfType<Stats>();
+            actual.Should().NotBeNull();
+            expected.Should().BeOfType<Stats>();
+            expected.Should().NotBeNull();
+            actual.Should().BeEquivalentTo(expected);
+
+        }
+
     }
 }

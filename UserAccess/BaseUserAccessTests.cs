@@ -360,7 +360,7 @@ namespace DnDProject.UnitTests.UserAccess
                 actual.Should().BeEquivalentTo(expected);
             }
         }
-            [Test]
+        [Test]
         public void BaseUserAccess_UpdateHealthRecord_ValidCall()
         {
             //Arrange
@@ -396,6 +396,109 @@ namespace DnDProject.UnitTests.UserAccess
                 actual.Should().BeOfType<Health>();
                 expected.Should().BeOfType<Health>();
                 Assert.AreEqual(1, saveChanges);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_AddStatsRecord_ValidCall()
+        {
+            List<Stats> statsList = CreateTestData.GetListOfStats();
+            var mockSet = new Mock<DbSet<Stats>>()
+                .SetupData(statsList, o =>
+                {
+                    return statsList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleStats();
+                var id = Guid.Parse("b346eee6-eba7-4ea7-be2e-911bb9034233");
+                expected.Character_id = id;
+
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.StatsRecords).Returns(mockSet.Object);
+
+                //Act
+                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
+                toTest.AddStatsRecord(expected);
+                var actual = toTest.GetStatsRecord(id);
+
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Stats>();
+                expected.Should().BeOfType<Stats>();
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_GetStatsRecord_ValidCall()
+        {
+
+            List<Stats> statsList = CreateTestData.GetListOfStats();
+            var mockSet = new Mock<DbSet<Stats>>()
+                .SetupData(statsList, o =>
+                {
+                    return statsList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleStats();
+                mockContext.Mock<CharacterContext>()
+                   .Setup(x => x.StatsRecords).Returns(mockSet.Object);
+
+                //Act
+                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
+                var actual = toTest.GetStatsRecord(expected.Character_id);
+
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Stats>();
+                expected.Should().BeOfType<Stats>();
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+
+        }
+        [Test]
+        public void BaseUserAccess_UpdateStatsRecord_ValidCall()
+        {
+            //Arrange
+            int saveChanges = 0;
+            List<Stats> statsList = CreateTestData.GetListOfStats();
+            var mockSet = new Mock<DbSet<Stats>>()
+                .SetupData(statsList, o =>
+                {
+                    return statsList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleStats();
+                expected.Strength = 20;
+                expected.Dexterity = 20;
+                expected.Constitution = 24;
+                mockContext.Mock<CharacterContext>()
+                   .Setup(x => x.StatsRecords).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
+
+                //Act
+                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
+                toTest.UpdateStatsRecord(expected);
+                toTest.SaveChanges();
+
+                var actual = repository.GetStatsRecord(expected.Character_id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Stats>();
+                expected.Should().BeOfType<Stats>();
+                Assert.AreEqual(1, saveChanges);
+
             }
         }
     }

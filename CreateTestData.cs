@@ -170,5 +170,52 @@ namespace DnDProject.UnitTests
 
             return listOfHealth;
         }
+
+        public static Stats GetSampleStats()
+        {
+            Stats stats = new Stats
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Strength = 10,
+                Dexterity = 10,
+                Constitution = 10,
+                Intelligence = 10,
+                Wisdom = 10,
+                Charisma = 10
+            };
+            return stats;
+        }
+
+        public static List<Stats> GetListOfStats()
+        {
+            List<Stats> listOfStats = new List<Stats>();
+            listOfStats.Add(GetSampleStats());
+
+            var Vex = new Stats()
+            {
+                Character_id = Guid.Parse("46d10bb8-84d2-408d-a928-5847ff99461f"),
+                Strength = 7,
+                Dexterity = 20,
+                Constitution = 10,
+                Intelligence = 14,
+                Wisdom = 16,
+                Charisma = 17
+            };
+            listOfStats.Add(Vex);
+
+            var Caleb = new Stats()
+            {
+                Character_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                Strength = 10,
+                Dexterity = 12,
+                Constitution = 16,
+                Intelligence = 20,
+                Wisdom = 16,
+                Charisma = 16
+            };
+            listOfStats.Add(Caleb);
+
+            return listOfStats;
+        }
     }
 }
