@@ -16,30 +16,30 @@ using FluentAssertions;
 namespace DnDProject.UnitTests.Repository
 {
     [TestFixture]
-    public class MySqlDataRepositoryTests
+    public class EFRepositoryTests
     {
         [Test]
-        public void MySqlDataRepository_ConstructMySqlDataRoot_ReturnTrue()
+        public void EFRepository_ConstructMySqlDataRoot_ReturnTrue()
         {
-            var toTest = new MySqlDataRepository();
+            var toTest = new EFRepository();
 
             Assert.IsNotNull(toTest);
         }
 
         [Test]
-        public void MySqlDataRepository_IsImplementationOfIDataRoot_ReturnTrue()
+        public void EFRepository_IsImplementationOfIDataRoot_ReturnTrue()
         {
             //Arrange
 
             //Act
-            var toTest = new MySqlDataRepository();
+            var toTest = new EFRepository();
 
             //Assert
             Assert.IsInstanceOf<IDataRepository>(toTest);
         }
 
         [Test]
-        public void MySqlDataRepository_LoadCharacterByCharacterID_SingularCharacterObjectReturned()
+        public void EFRepository_LoadCharacterByCharacterID_SingularCharacterObjectReturned()
         {
 
             //Arrange
@@ -62,7 +62,7 @@ namespace DnDProject.UnitTests.Repository
                     .Setup(x => x.Characters).Returns(mockSet.Object);
 
                 //4. Create a instance of MySqlDataRepository, injecting mockContext via the constructor.
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
                 var expected = CreateTestData.getSampleCharacter();
                 var actual = toTest.GetCharacter(expected.Character_id);
 
@@ -77,7 +77,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_AddCharacter_ValidCall()
+        public void EFRepository_AddCharacter_ValidCall()
         {
             //Arrange
             int saveChanges = 0;
@@ -96,7 +96,7 @@ namespace DnDProject.UnitTests.Repository
                     .Setup(x => x.Characters).Returns(mockSet.Object);
                 mockContext.Mock<CharacterContext>()
                     .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
                 var expected = CreateTestData.getSampleCharacter();
                 expected.Character_id = Guid.Parse("33855fe6-807a-46e3-850f-ada7dacfc435");
 
@@ -116,7 +116,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_UpdateCharacter_CharacterUpdated() 
+        public void EFRepository_UpdateCharacter_CharacterUpdated() 
         {
             //PROBLEMATIC TEST
             //Whenever the record within the mockSet is mapped to and the mockSet is saved, the record we are updating is found, but not mapped.
@@ -146,7 +146,7 @@ namespace DnDProject.UnitTests.Repository
                 mockContext.Mock<CharacterContext>()
                     .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
 
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
 
 
                 //Act
@@ -169,7 +169,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_DeleteCharacter_ValidCall()
+        public void EFRepository_DeleteCharacter_ValidCall()
         {
             //Arrange
 
@@ -191,7 +191,7 @@ namespace DnDProject.UnitTests.Repository
                         .Callback<Character>((entity) => charList.Remove(entity));
 
                 //Act
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
                 var id = CreateTestData.getSampleCharacter().Character_id;
                 toTest.DeleteCharacter(id);
                 Character expected = null;
@@ -208,7 +208,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_AddIsProficient_ValidCall()
+        public void EFRepository_AddIsProficient_ValidCall()
         {
             //Arrange
             List<IsProficient> proficiencyList = CreateTestData.GetListOfIsProficient();
@@ -223,7 +223,7 @@ namespace DnDProject.UnitTests.Repository
             {
                 mockContext.Mock<CharacterContext>()
                     .Setup(x => x.Proficiencies).Returns(mockSet.Object);
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
 
                 //Act
                 var GrogProficiencies = CreateTestData.GetSampleIsProficient();
@@ -242,7 +242,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_GetProficiencyRecord_ValidCall()
+        public void EFRepository_GetProficiencyRecord_ValidCall()
         {
             //Arrange
             List<IsProficient> proficiencyList = CreateTestData.GetListOfIsProficient();
@@ -256,7 +256,7 @@ namespace DnDProject.UnitTests.Repository
             {
                 mockContext.Mock<CharacterContext>()
                     .Setup(x => x.Proficiencies).Returns(mockSet.Object);
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
 
                 var id = Guid.Parse("11111111-2222-3333-4444-555555555555");
                 var expected = CreateTestData.GetSampleIsProficient();
@@ -273,7 +273,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_UpdateProficiencyRecord_ValidCall()
+        public void EFRepository_UpdateProficiencyRecord_ValidCall()
         {
             //Arrange
             int saveChanges = 0;
@@ -298,7 +298,7 @@ namespace DnDProject.UnitTests.Repository
                     .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
 
                 //Act
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
                 toTest.UpdateProficiencyRecord(expected);
                 toTest.SaveChanges();
 
@@ -316,7 +316,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_AddHealthRecord_ValidCall()
+        public void EFRepository_AddHealthRecord_ValidCall()
         {
             //Arrange
             List<Health> healthList = CreateTestData.GetListOfHealth();
@@ -335,7 +335,7 @@ namespace DnDProject.UnitTests.Repository
                     .Setup(x => x.HealthRecords).Returns(mockSet.Object);
 
                 //Act
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
                 toTest.AddHealthRecord(expected);
                 var actual = toTest.GetHealthRecord(id);
 
@@ -348,7 +348,7 @@ namespace DnDProject.UnitTests.Repository
             }
         }
         [Test]
-        public void MySqlDataRepository_GetHealthRecord_ValidCall()
+        public void EFRepository_GetHealthRecord_ValidCall()
         {
             //Arrange
             List<Health> healthList = CreateTestData.GetListOfHealth();
@@ -367,7 +367,7 @@ namespace DnDProject.UnitTests.Repository
                     .Setup(x => x.HealthRecords).Returns(mockSet.Object);
 
                 //Act
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
                 var actual = toTest.GetHealthRecord(id);
 
                 actual.Should().NotBeNull();
@@ -379,7 +379,7 @@ namespace DnDProject.UnitTests.Repository
 
         }
         [Test]
-        public void MySqlDataRepository_UpdateHealthRecord_ValidCall()
+        public void EFRepository_UpdateHealthRecord_ValidCall()
         {
             //Arrange
             int saveChanges = 0;
@@ -398,7 +398,7 @@ namespace DnDProject.UnitTests.Repository
                 var expected = CreateTestData.GetSampleHealth();
                 expected.MaxHP = 200;
                 expected.DeathSaveSuccesses = 2;
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
 
 
                 //Act
@@ -417,7 +417,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void MySqlDataRepository_AddStatsRecord_ValidCall()
+        public void EFRepository_AddStatsRecord_ValidCall()
         {
             List<Stats> statsList = CreateTestData.GetListOfStats();
             var mockSet = new Mock<DbSet<Stats>>()
@@ -436,7 +436,7 @@ namespace DnDProject.UnitTests.Repository
                     .Setup(x => x.StatsRecords).Returns(mockSet.Object);
 
                 //Act
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
                 toTest.AddStatsRecord(expected);
                 var actual = toTest.GetStatsRecord(id);
 
@@ -449,7 +449,7 @@ namespace DnDProject.UnitTests.Repository
             }
         }
         [Test]
-        public void MySqlDataRepository_GetStatsRecord_ValidCall()
+        public void EFRepository_GetStatsRecord_ValidCall()
         {
 
             List<Stats> statsList = CreateTestData.GetListOfStats();
@@ -466,7 +466,7 @@ namespace DnDProject.UnitTests.Repository
                    .Setup(x => x.StatsRecords).Returns(mockSet.Object);
 
                 //Act
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
                 var actual = toTest.GetStatsRecord(expected.Character_id);
 
                 actual.Should().NotBeNull();
@@ -478,7 +478,7 @@ namespace DnDProject.UnitTests.Repository
             }
         }
         [Test]
-        public void MySqlDataRepository_UpdateStatsRecord_ValidCall()
+        public void EFRepository_UpdateStatsRecord_ValidCall()
         {
             //Arrange
             int saveChanges = 0;
@@ -501,7 +501,7 @@ namespace DnDProject.UnitTests.Repository
                     .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
 
                 //Act
-                IDataRepository toTest = mockContext.Create<MySqlDataRepository>();
+                IDataRepository toTest = mockContext.Create<EFRepository>();
                 toTest.UpdateStatsRecord(expected);
                 toTest.SaveChanges();
 
@@ -512,6 +512,108 @@ namespace DnDProject.UnitTests.Repository
                 expected.Should().NotBeNull();
                 actual.Should().BeOfType<Stats>();
                 expected.Should().BeOfType<Stats>();
+                Assert.AreEqual(1, saveChanges);
+
+            }
+        }
+
+        [Test]
+        public void EFRepository_AddCurrencyRecord_ValidCall()
+        {
+            //Arrange
+            List<Currency> currencyList = CreateTestData.GetListOfCurrency();
+            var mockSet = new Mock<DbSet<Currency>>()
+                .SetupData(currencyList, o =>
+                {
+                    return currencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleCurrency();
+                var id = Guid.Parse("b346eee6-eba7-4ea7-be2e-911bb9034233");
+                expected.Character_id = id;
+
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.CurrencyRecords).Returns(mockSet.Object);
+
+                //Act
+                IDataRepository toTest = mockContext.Create<EFRepository>();
+                toTest.AddCurrencyRecord(expected);
+                var actual = toTest.GetCurrencyRecord(id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Currency>();
+                expected.Should().BeOfType<Currency>();
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+        [Test]
+        public void EFRepository_GetCurrencyRecord_ValidCall()
+        {
+            //Arrange
+            List<Currency> currencyList = CreateTestData.GetListOfCurrency();
+            var mockSet = new Mock<DbSet<Currency>>()
+                .SetupData(currencyList, o =>
+                {
+                    return currencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleCurrency();
+                mockContext.Mock<CharacterContext>()
+                   .Setup(x => x.CurrencyRecords).Returns(mockSet.Object);
+                
+                
+                //Act
+                IDataRepository toTest = mockContext.Create<EFRepository>();
+                var actual = toTest.GetCurrencyRecord(expected.Character_id);
+
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Currency>();
+                expected.Should().BeOfType<Currency>();
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+        [Test]
+        public void EFRepository_UpdateCurrencyRecord_ValidCall()
+        {
+            //Arrange
+            int saveChanges = 0;
+            List<Currency> currencyList = CreateTestData.GetListOfCurrency();
+            var mockSet = new Mock<DbSet<Currency>>()
+                .SetupData(currencyList, o =>
+                {
+                    return currencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleCurrency();
+                expected.GoldPieces = 427;
+
+                mockContext.Mock<CharacterContext>()
+                  .Setup(x => x.CurrencyRecords).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
+
+                //Act
+                IDataRepository toTest = mockContext.Create<EFRepository>();
+                toTest.UpdateCurrencyRecord(expected);
+                toTest.SaveChanges();
+                var actual = toTest.GetCurrencyRecord(expected.Character_id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Currency>();
+                expected.Should().BeOfType<Currency>();
                 Assert.AreEqual(1, saveChanges);
 
             }

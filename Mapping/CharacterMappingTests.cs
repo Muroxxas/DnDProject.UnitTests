@@ -158,6 +158,10 @@ namespace DnDProject.UnitTests.Mapping
             actual.Should().BeEquivalentTo(expected);
 
         }
-
+        [Test]
+        public void CharacterMapper_MapUpdatedCurrencyRecordOverEntity_ItemsAreEquivalent()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

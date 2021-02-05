@@ -36,7 +36,7 @@ namespace DnDProject.UnitTests.UserAccess
             using (var mockContext = AutoMock.GetLoose())
             {
                 mockContext.Mock<CharacterContext>().Setup(x => x.Characters).Returns(mockSet.Object);
-                IDataRepository dataRepository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository dataRepository = mockContext.Create<EFRepository>();
 
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(dataRepository);
 
@@ -74,7 +74,7 @@ namespace DnDProject.UnitTests.UserAccess
             using (var mockContext = AutoMock.GetLoose())
             {
                 mockContext.Mock<CharacterContext>().Setup(x => x.Characters).Returns(mockSet.Object);
-                IDataRepository dataRepository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository dataRepository = mockContext.Create<EFRepository>();
 
                 IBaseUserAccess toTest = new BaseUserAccess(dataRepository);
 
@@ -108,7 +108,7 @@ namespace DnDProject.UnitTests.UserAccess
             {
                 mockContext.Mock<CharacterContext>().Setup(x => x.Characters).Returns(mockSet.Object);
                 mockContext.Mock<CharacterContext>().Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
-                IDataRepository dataRepository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository dataRepository = mockContext.Create<EFRepository>();
 
 
                 var expected = CreateTestData.getSampleCharacter();
@@ -149,14 +149,14 @@ namespace DnDProject.UnitTests.UserAccess
                     .Setup(x => x.Characters.Remove(It.IsAny<Character>()))
                         .Callback<Character>((entity) => charList.Remove(entity));
 
-                IDataRepository dataRepository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository dataRepository = mockContext.Create<EFRepository>();
 
                 var toDelete = CreateTestData.getSampleCharacter();
                 Character expected = null;
                 var NotExpected = CreateTestData.getSampleCharacter();
 
                 var id = CreateTestData.getSampleCharacter().Character_id;
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
 
                 //Act
@@ -191,13 +191,13 @@ namespace DnDProject.UnitTests.UserAccess
                     .Setup(x => x.Proficiencies.Add(It.IsAny<IsProficient>()))
                         .Callback<IsProficient>((entity) => ProficienciesList.Add(entity));
 
-                IDataRepository dataRepository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository dataRepository = mockContext.Create<EFRepository>();
 
                 var toAdd = CreateTestData.GetSampleIsProficient();
                 var id = Guid.Parse("ce798c73-638b-4c70-adea-9092615fbe01");
                 toAdd.Character_id = id;
 
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
 
                 //Act
@@ -236,7 +236,7 @@ namespace DnDProject.UnitTests.UserAccess
                 var id = expected.Character_id;
 
 
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
 
                 //Act
@@ -275,7 +275,7 @@ namespace DnDProject.UnitTests.UserAccess
                 expected.DexteritySave = false;
                 expected.CharismaSave = true;
 
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
 
                 //Act
@@ -315,7 +315,7 @@ namespace DnDProject.UnitTests.UserAccess
                     .Setup(x => x.HealthRecords).Returns(mockSet.Object);
 
                 //Act
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
 
                 toTest.AddHealthRecord(expected);
@@ -348,7 +348,7 @@ namespace DnDProject.UnitTests.UserAccess
                     .Setup(x => x.HealthRecords).Returns(mockSet.Object);
 
                 //Act
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
                 var actual = toTest.GetHealthRecord(id);
 
@@ -381,7 +381,7 @@ namespace DnDProject.UnitTests.UserAccess
                 var expected = CreateTestData.GetSampleHealth();
                 expected.MaxHP = 200;
                 expected.DeathSaveSuccesses = 2;
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
 
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
 
@@ -418,7 +418,7 @@ namespace DnDProject.UnitTests.UserAccess
                     .Setup(x => x.StatsRecords).Returns(mockSet.Object);
 
                 //Act
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
                 toTest.AddStatsRecord(expected);
                 var actual = toTest.GetStatsRecord(id);
@@ -448,7 +448,7 @@ namespace DnDProject.UnitTests.UserAccess
                    .Setup(x => x.StatsRecords).Returns(mockSet.Object);
 
                 //Act
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
                 var actual = toTest.GetStatsRecord(expected.Character_id);
 
@@ -485,7 +485,7 @@ namespace DnDProject.UnitTests.UserAccess
                     .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
 
                 //Act
-                IDataRepository repository = mockContext.Create<MySqlDataRepository>();
+                IDataRepository repository = mockContext.Create<EFRepository>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repository);
                 toTest.UpdateStatsRecord(expected);
                 toTest.SaveChanges();
@@ -499,6 +499,111 @@ namespace DnDProject.UnitTests.UserAccess
                 expected.Should().BeOfType<Stats>();
                 Assert.AreEqual(1, saveChanges);
 
+            }
+        }
+
+        [Test]
+        public void BaseUserAccess_AddCurrencyRecord_ValidCall()
+        {
+
+            //Arrange
+            List<Currency> currencyList = CreateTestData.GetListOfCurrency();
+            var mockSet = new Mock<DbSet<Currency>>()
+                .SetupData(currencyList, o =>
+                {
+                    return currencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleCurrency();
+                var id = Guid.Parse("b346eee6-eba7-4ea7-be2e-911bb9034233");
+                expected.Character_id = id;
+
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.CurrencyRecords).Returns(mockSet.Object);
+
+                //Act
+                IDataRepository repo = mockContext.Create<EFRepository>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repo);
+                toTest.AddCurrencyRecord(expected);
+                var actual = toTest.GetCurrencyRecord(id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Currency>();
+                expected.Should().BeOfType<Currency>();
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_GetCurrencyRecord_ValidCall()
+        {
+            //Arrange
+            List<Currency> currencyList = CreateTestData.GetListOfCurrency();
+            var mockSet = new Mock<DbSet<Currency>>()
+                .SetupData(currencyList, o =>
+                {
+                    return currencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleCurrency();
+                mockContext.Mock<CharacterContext>()
+                   .Setup(x => x.CurrencyRecords).Returns(mockSet.Object);
+
+
+                //Act
+                IDataRepository repo = mockContext.Create<EFRepository>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repo);
+                var actual = toTest.GetCurrencyRecord(expected.Character_id);
+
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Currency>();
+                expected.Should().BeOfType<Currency>();
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_UpdateCurrencyRecord_ValidCall()
+        {
+            //Arrange
+            int saveChanges = 0;
+            List<Currency> currencyList = CreateTestData.GetListOfCurrency();
+            var mockSet = new Mock<DbSet<Currency>>()
+                .SetupData(currencyList, o =>
+                {
+                    return currencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                var expected = CreateTestData.GetSampleCurrency();
+                expected.GoldPieces = 427;
+
+                mockContext.Mock<CharacterContext>()
+                  .Setup(x => x.CurrencyRecords).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
+
+                //Act
+                IDataRepository repo = mockContext.Create<EFRepository>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(repo);
+                toTest.UpdateCurrencyRecord(expected);
+                toTest.SaveChanges();
+                var actual = toTest.GetCurrencyRecord(expected.Character_id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Currency>();
+                expected.Should().BeOfType<Currency>();
+                Assert.AreEqual(1, saveChanges);
             }
         }
     }

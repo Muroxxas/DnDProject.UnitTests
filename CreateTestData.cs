@@ -217,5 +217,42 @@ namespace DnDProject.UnitTests
 
             return listOfStats;
         }
+
+        public static Currency GetSampleCurrency()
+        {
+            Currency currency = new Currency
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                PlatinumPieces = 50,
+                GoldPieces = 4000,
+                ElectrumPieces = 0,
+                SilverPieces = 99,
+                CopperPieces = 500
+            };
+            return currency;
+        }
+
+        public static List<Currency> GetListOfCurrency()
+        {
+            List<Currency> listOfCurrencies = new List<Currency>();
+
+            listOfCurrencies.Add(GetSampleCurrency());
+
+            Currency Vex = GetSampleCurrency();
+            Vex.Character_id = Guid.Parse("55555555-4444-3333-2222-111111111111");
+            Vex.PlatinumPieces = 1000000;
+            listOfCurrencies.Add(Vex);
+
+            Currency Veth = GetSampleCurrency();
+            Veth.Character_id = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+            Veth.PlatinumPieces = 0;
+            Veth.GoldPieces = 0;
+            Veth.ElectrumPieces = 0;
+            Veth.SilverPieces = 0;
+            Veth.CopperPieces = 1;
+            listOfCurrencies.Add(Veth);
+
+            return listOfCurrencies;
+        }
     }
 }
