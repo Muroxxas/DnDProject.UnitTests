@@ -254,5 +254,43 @@ namespace DnDProject.UnitTests
 
             return listOfCurrencies;
         }
+
+        public static Note GetSampleNote()
+        {
+            Note note = new Note
+            {
+                Note_id = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Name = "Learning to Spell Ft. Grog Strongjaw",
+                Contents = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            };
+            return note;
+        }
+
+        public static List<Note> GetListOfNotes()
+        {
+            List<Note> notes = new List<Note>();
+            notes.Add(GetSampleNote());
+
+            var GreatAxe = new Note()
+            {
+                Note_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Name = "How To Use a Great Axe Ft. Grog Strongjaw",
+                Contents = "Lorem Ipsum"
+            };
+            notes.Add(GreatAxe);
+
+            var Tary = new Note()
+            {
+                Note_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Character_id = Guid.Parse("46d10bb8-84d2-408d-a928-5847ff99461f"),
+                Name = "The Daring Trials and Tribulations of Taryon Darington",
+                Contents = "The quick brown fox jumped over the lazy dog."
+            };
+            notes.Add(Tary);
+
+            return notes;
+        }
     }
 }

@@ -161,7 +161,19 @@ namespace DnDProject.UnitTests.Mapping
         [Test]
         public void CharacterMapper_MapUpdatedCurrencyRecordOverEntity_ItemsAreEquivalent()
         {
-            throw new NotImplementedException();
+            //Arrange
+            var expected = CreateTestData.GetSampleCurrency();
+            var actual = new Currency();
+            //Act
+            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
+            toTest.mapUpdatedCurrencyRecordOverEntity(expected, actual);
+
+            //Assert
+            actual.Should().BeOfType<Currency>();
+            actual.Should().NotBeNull();
+            expected.Should().BeOfType<Currency>();
+            expected.Should().NotBeNull();
+            actual.Should().BeEquivalentTo(expected);
         }
     }
 }
