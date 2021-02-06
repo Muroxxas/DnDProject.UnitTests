@@ -34,7 +34,7 @@ namespace DnDProject.UnitTests.Repository
                 var id = Guid.Parse("b346eee6-eba7-4ea7-be2e-911bb9034233");
                 expected.Character_id = id;
 
-                 mockContext.Mock<CharacterContext>()
+                mockContext.Mock<CharacterContext>()
                     .Setup(x => x.Set<Stats>()).Returns(mockSet.Object);
 
                 //Act
