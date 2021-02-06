@@ -1,4 +1,5 @@
 ﻿using DnDProject.Backend.Repository;
+using DnDProject.Backend.Unit_Of_Work.Interfaces;
 using DnDProject.Backend.UserAccess.Implementations;
 using DnDProject.Backend.UserAccess.Interfaces;
 using System;
@@ -11,9 +12,9 @@ namespace DnDProject.UnitTests.UserAccess
 {
     public static class UserAccessFactory
     {
-        public static IBaseUserAccess getBaseUserAccess(IDataRepository dataRepository)
+        public static IBaseUserAccess getBaseUserAccess(IUnitOfWork worker)
         {
-            return new BaseUserAccess(dataRepository);
+            return new BaseUserAccess(worker);
         }
     }
 }
