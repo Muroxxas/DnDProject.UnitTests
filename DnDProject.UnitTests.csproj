@@ -127,8 +127,16 @@
     <Compile Include="Mapping\CharacterMappingTests.cs" />
     <Compile Include="Mapping\mappingTestFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Repository\EFRepositoryTests.cs" />
+    <Compile Include="Repository\CharacterRepositoryTests.cs" />
+    <Compile Include="Repository\CurrencyRepositoryTests.cs" />
+    <Compile Include="Repository\HealthRepositoryTests.cs" />
+    <Compile Include="Repository\IsProficientRepositoryTests.cs" />
+    <Compile Include="Repository\NotesRepositoryTests.cs" />
+    <Compile Include="Repository\SpellsRepositoryTests.cs" />
+    <Compile Include="Repository\StatsRepositoryTests.cs" />
+    <Compile Include="Unit of Work\UoWFactory.cs" />
     <Compile Include="UserAccess\BaseUserAccessTests.cs" />
+    <Compile Include="UserAccess\ManagerUserAccessTests.cs" />
     <Compile Include="UserAccess\UserAccessFactory.cs" />
   </ItemGroup>
   <ItemGroup>
