@@ -20,5 +20,21 @@ namespace DnDProject.UnitTests.UserAccess
         {
             throw new NotImplementedException();
         }
+
+        [Test]
+        public void ManagerUserAccess_AddSpellMaterials_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void ManagerUserAccess_DeleteSpellMaterials_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void ManagerUserAccess_DeleteSpellMaterialsById_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

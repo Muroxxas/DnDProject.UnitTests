@@ -1,5 +1,6 @@
 ﻿using DnDProject.Entities.Character.DataModels;
 using DnDProject.Entities.Character.ViewModels;
+using DnDProject.Entities.Spells.DataModels;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -291,6 +292,163 @@ namespace DnDProject.UnitTests
             notes.Add(Tary);
 
             return notes;
+        }
+
+
+        public static Spell GetSampleSpell()
+        {
+            Spell spell = new Spell
+            {
+                Spell_id = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
+                Name = "Firebolt",
+                Description = "Launch a bolt of fire for 1d6 fire damage.",
+                Level = 0,
+                School_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                CastingTime = "1 Action",
+                Range = "30 feet",
+                Duration = "instant",
+                RequiresVerbal = true,
+                RequiresSomantic = true,
+                RequiresMaterial = false,
+                RequiresConcentration = false
+            };
+            return spell;
+        }
+
+        public static List<Spell> GetListOfSpells()
+        {
+            List<Spell> spells = new List<Spell>();
+
+            spells.Add(GetSampleSpell());
+
+            Spell nineSidedTower = new Spell
+            {
+                Spell_id = Guid.Parse("46d10bb8-84d2-408d-a928-5847ff99461f"),
+                Name = "Widogast's Nascent Nine-sided Tower",
+                Description = "A flavored Magnificent Mansion",
+                Level = 7,
+                School_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                CastingTime = "1 minute",
+                Range = "100 feet",
+                Duration = "24 hours",
+                RequiresVerbal = true,
+                RequiresSomantic = true,
+                RequiresMaterial = false,
+                RequiresConcentration = true
+            };
+
+            spells.Add(nineSidedTower);
+
+            Spell VoltaicBolt = new Spell
+            {
+                Spell_id = Guid.Parse("a9756f3d-55d0-40cd-8083-6b547e4932ab"),
+                Name = "Brenatto's Voltaic Bolt",
+                Description = "The caster's next ranged attack deals an additional 3d6 lightning damage",
+                Level = 1,
+                School_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                CastingTime = "1 Bonus Action",
+                Duration = "1 round",
+                Range = "30 feet",
+                RequiresVerbal = false,
+                RequiresSomantic = true,
+                RequiresMaterial = true,
+                RequiresConcentration = false
+            };
+            spells.Add(VoltaicBolt);
+
+            Spell WebOfFire = new Spell
+            {
+                Spell_id = Guid.Parse("51b4c563-2040-4c7d-a23e-cab8d5d3c73b"),
+                Name = "Widogast's Web Of Fire",
+                Description = "The caster deals a shitton of fire damage to the target.",
+                Level = 4,
+                School_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                CastingTime = "1 Action",
+                Duration = "Instant",
+                Range = "120 feet",
+                RequiresVerbal = true,
+                RequiresSomantic = true,
+                RequiresMaterial = true,
+                RequiresConcentration = false
+            };
+            spells.Add(WebOfFire);
+            return spells;
+
+        }
+
+        public static Material GetSampleMaterial()
+        {
+            Material material = new Material()
+            {
+                Spell_id = Guid.Parse("a9756f3d-55d0-40cd-8083-6b547e4932ab"),
+                materials = "A bit of fleece"
+        };
+        return material;
+        }
+
+        public static List<Material> GetListOfMaterials()
+        {
+            List<Material> materials = new List<Material>();
+            materials.Add(GetSampleMaterial());
+
+            Material fireball = new Material()
+            {
+                Spell_id = Guid.Parse("8a179717-960b-42a2-bda7-13914a9daed4"),
+                materials = "A tiny ball of bat guano and sulfur."
+            };
+            materials.Add(fireball);
+
+            Material revivify = new Material()
+            {
+                Spell_id = Guid.Parse("caf8b2d1-7903-493c-bc3a-ec2fc554d533"),
+                materials = "Diamonds worth 300 gp, which the spell consumes."
+            };
+            materials.Add(revivify);
+            return materials;
+        }
+
+        public static Spell_Character GetSampleKnownSpell()
+        {
+            Spell_Character knownSpellRecord = new Spell_Character()
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Spell_id = Guid.Parse("46d10bb8-84d2-408d-a928-5847ff99461f")
+            };
+            return knownSpellRecord;
+        }
+        public static List<Spell_Character> GetListOfKnownSpells()
+        {
+            List<Spell_Character> knownSpells = new List<Spell_Character>();
+
+            var Caleb_Tower = GetSampleKnownSpell();
+
+            knownSpells.Add(Caleb_Tower);
+
+            Spell_Character Caleb_WebOfFire = new Spell_Character()
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Spell_id = Guid.Parse("51b4c563-2040-4c7d-a23e-cab8d5d3c73b")
+            };
+
+            knownSpells.Add(Caleb_WebOfFire);
+
+            Spell_Character Veth_VoltaicBolt = new Spell_Character()
+            {
+                Character_id = Guid.Parse("9aa6cd47-d784-46e4-9b66-7b1ea10d3386"),
+                Spell_id = Guid.Parse("a9756f3d-55d0-40cd-8083-6b547e4932ab")
+
+            };
+            knownSpells.Add(Veth_VoltaicBolt);
+
+            Spell_Character Veth_MageHand = new Spell_Character()
+            {
+                Character_id = Guid.Parse("9aa6cd47-d784-46e4-9b66-7b1ea10d3386"),
+                Spell_id = Guid.Parse("a678034d-730c-4b86-a952-c975c04c6291")
+            };
+            knownSpells.Add(Veth_MageHand);
+
+            return knownSpells;
+
         }
     }
 }

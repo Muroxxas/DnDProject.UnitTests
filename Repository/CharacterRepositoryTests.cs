@@ -60,7 +60,6 @@ namespace DnDProject.UnitTests.Repository
         public void CharacterRepository_AddCharacter_ValidCall()
         {
             //Arrange
-            int saveChanges = 0;
             List<Character> charList = CreateTestData.GetListOfCharacters();
 
             var mockSet = new Mock<DbSet<Character>>()
@@ -74,9 +73,6 @@ namespace DnDProject.UnitTests.Repository
 
                 mockContext.Mock<CharacterContext>()
                     .Setup(x => x.Set<Character>()).Returns(mockSet.Object);
-
-                mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
                 ICharacterRepository toTest = mockContext.Create<CharacterRepository>();
                 var expected = CreateTestData.getSampleCharacter();
                 expected.Character_id = Guid.Parse("33855fe6-807a-46e3-850f-ada7dacfc435");
