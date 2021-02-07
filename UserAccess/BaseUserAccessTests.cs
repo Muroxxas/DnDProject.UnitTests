@@ -93,43 +93,7 @@ namespace DnDProject.UnitTests.UserAccess
 
             }
         }
-        [Test]
-        public void BaseUserAccess_UpdateCharacter_ValidCall()
-        {
-            //Arrange
-            int saveChanges = 0;
-            List<Character> charList = CreateTestData.GetListOfCharacters();
-
-            var mockSet = new Mock<DbSet<Character>>()
-                .SetupData(charList, o =>
-                {
-                    return charList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                mockContext.Mock<CharacterContext>().Setup(x => x.Set<Character>()).Returns(mockSet.Object);
-                mockContext.Mock<CharacterContext>().Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
-                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
-                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
-
-                var expected = CreateTestData.getSampleCharacter();
-                expected.Name = "Grog";
-                expected.Exp = 100;
-                var id = expected.Character_id;
-                //Act
-
-                toTest.UpdateCharacter(expected);
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<Character>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-
-            }
-
-        }
+       
         [Test]
         public void BaseUserAccess_DeleteCharacter_ValidCall()
         {
@@ -249,42 +213,6 @@ namespace DnDProject.UnitTests.UserAccess
             }
         }
         [Test]
-        public void BaseUserAccess_UpdateProficiencyRecord_ValidCall()
-        {
-            //Arrange
-            List<IsProficient> IsProficientList = CreateTestData.GetListOfIsProficient();
-            var mockSet = new Mock<DbSet<IsProficient>>()
-                .SetupData(IsProficientList, o =>
-                {
-                    return IsProficientList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                var expected = CreateTestData.GetSampleIsProficient();
-                expected.Arcana = true;
-                expected.DexteritySave = false;
-
-                //When something calls for the Characters table, return the DbSet in mockSet
-                mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.Set<IsProficient>()).Returns(mockSet.Object);
-
-                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
-                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
-
-
-                //Act
-                toTest.UpdateProficiencyRecord(expected);
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<IsProficient>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-            }
-        }
-        [Test]
         public void BaseUserAcces_AddHealthRecord_ValidCall()
         {
             //Arrange
@@ -350,39 +278,7 @@ namespace DnDProject.UnitTests.UserAccess
                 actual.Should().BeEquivalentTo(expected);
             }
         }
-        [Test]
-        public void BaseUserAccess_UpdateHealthRecord_ValidCall()
-        {
-            //Arrange
-            List<Health> healthList = CreateTestData.GetListOfHealth();
-            var mockSet = new Mock<DbSet<Health>>()
-                .SetupData(healthList, o =>
-                {
-                    return healthList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.Set<Health>()).Returns(mockSet.Object);
-
-                var expected = CreateTestData.GetSampleHealth();
-                expected.MaxHP = 200;
-                expected.DeathSaveSuccesses = 2;
-                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
-                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
-
-                //Act
-                toTest.UpdateHealthRecord(expected);
-
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<Health>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-            }
-        }
+ 
         [Test]
         public void BaseUserAccess_AddStatsRecord_ValidCall()
         {
@@ -446,44 +342,6 @@ namespace DnDProject.UnitTests.UserAccess
             }
 
         }
-        [Test]
-        public void BaseUserAccess_UpdateStatsRecord_ValidCall()
-        {
-            //Arrange
-
-            List<Stats> statsList = CreateTestData.GetListOfStats();
-            var mockSet = new Mock<DbSet<Stats>>()
-                .SetupData(statsList, o =>
-                {
-                    return statsList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                var expected = CreateTestData.GetSampleStats();
-                expected.Strength = 20;
-                expected.Dexterity = 20;
-                expected.Constitution = 24;
-                mockContext.Mock<CharacterContext>()
-                   .Setup(x => x.Set<Stats>()).Returns(mockSet.Object);
-
-                //Act
-                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
-                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
-                toTest.UpdateStatsRecord(expected);
-
-                //Assert
-
-                expected.Should().NotBeNull();
-
-                expected.Should().BeOfType<Stats>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-
-            }
-        }
-
         [Test]
         public void BaseUserAccess_AddCurrencyRecord_ValidCall()
         {
@@ -551,39 +409,7 @@ namespace DnDProject.UnitTests.UserAccess
                 actual.Should().BeEquivalentTo(expected);
             }
         }
-        [Test]
-        public void BaseUserAccess_UpdateCurrencyRecord_ValidCall()
-        {
-            //Arrange
-            List<Currency> currencyList = CreateTestData.GetListOfCurrency();
-            var mockSet = new Mock<DbSet<Currency>>()
-                .SetupData(currencyList, o =>
-                {
-                    return currencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                var expected = CreateTestData.GetSampleCurrency();
-                expected.GoldPieces = 427;
-
-                mockContext.Mock<CharacterContext>()
-                  .Setup(x => x.Set<Currency>()).Returns(mockSet.Object);
-
-                //Act
-                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
-                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
-                toTest.UpdateCurrencyRecord(expected);
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<Currency>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-            }
-        }
-
+        
         [Test]
         public void BaseUserAccess_AddNote_ValidCall()
         {
@@ -693,39 +519,7 @@ namespace DnDProject.UnitTests.UserAccess
 
             }
         }
-        [Test]
-        public void BaseUserAccess_UpdateNote_ValidCall()
-        {
-            //Arrange
-            List<Note> listOfNotes = CreateTestData.GetListOfNotes();
-            var mockSet = new Mock<DbSet<Note>>()
-                .SetupData(listOfNotes, o =>
-                {
-                    return listOfNotes.Single(x => x.Note_id.CompareTo(o.First()) == 0);
-                });
-
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                var expected = CreateTestData.GetSampleNote();
-                expected.Contents = "This is where I post the entire Bee Movie script, right?";
-
-                mockContext.Mock<CharacterContext>()
-                  .Setup(x => x.Set<Note>()).Returns(mockSet.Object);
-
-
-                //Act
-                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
-                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
-                toTest.UpdateNote(expected);
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<Note>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-            }
-        }
+        
         [Test]
         public void BaseUserAccess_DeleteNote_ValidCall()
         {
@@ -755,5 +549,30 @@ namespace DnDProject.UnitTests.UserAccess
                 listOfNotes.Should().BeOfType<List<Note>>();
             }
         }
+
+        [Test]
+        public void BaseUserAccess_GetSpell_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void BaseUserAccess_GetSpellsKnownBy_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void BaseUserAccess_GetSpellsOfClass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+
+        [Test]
+        public void BaseUserAccess_GetSpellsCastableBy_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+
     }
 }

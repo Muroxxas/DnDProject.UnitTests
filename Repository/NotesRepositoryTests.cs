@@ -132,40 +132,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
 
-        [Test]
-        public void EFRepository__UpdateNote_ValidCall()
-        {
-            //Arrange
-
-            List<Note> listOfNotes = CreateTestData.GetListOfNotes();
-            var mockSet = new Mock<DbSet<Note>>()
-                .SetupData(listOfNotes, o =>
-                {
-                    return listOfNotes.Single(x => x.Note_id.CompareTo(o.First()) == 0);
-                });
-
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                var expected = CreateTestData.GetSampleNote();
-                expected.Contents = "This is where I post the entire Bee Movie script, right?";
-
-                mockContext.Mock<CharacterContext>()
-                  .Setup(x => x.Set<Note>()).Returns(mockSet.Object);
-
-
-                //Act
-                INotesRepository toTest = mockContext.Create<NotesRepository>();
-                toTest.Update(expected);
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<Note>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-            }
-        }
-
+        
 
         [Test]
         public void EFRepository__DeleteNote_ValidCall()

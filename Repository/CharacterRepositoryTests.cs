@@ -94,41 +94,7 @@ namespace DnDProject.UnitTests.Repository
             }
         }
 
-        [Test]
-        public void CharacterRepository_UpdateCharacter_CharacterUpdated()
-        {
-            //Arrange
-            List<Character> charList = CreateTestData.GetListOfCharacters();
-            var mockSet = new Mock<DbSet<Character>>()
-                .SetupData(charList, o =>
-                {
-                    return charList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                var expected = CreateTestData.getSampleCharacter();
-                expected.Name = "Grog";
-                expected.Exp = 100;
-
-                //When something calls for the Characters table, return the DbSet in mockSet
-                mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.Set<Character>()).Returns(mockSet.Object);
-                ICharacterRepository toTest = mockContext.Create<CharacterRepository>();
-
-
-                //Act
-                toTest.Update(expected);
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<Character>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-            }
-        }
-
+        
         [Test]
         public void CharacterRepository_DeleteCharacter_ValidCall()
         {

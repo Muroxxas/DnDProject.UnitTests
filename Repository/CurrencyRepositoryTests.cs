@@ -85,39 +85,6 @@ namespace DnDProject.UnitTests.Repository
             }
         }
 
-        [Test]
-        public void EFRepository_UpdateCurrencyRecord_ValidCall()
-        {
-            //Arrange
-
-            List<Currency> currencyList = CreateTestData.GetListOfCurrency();
-            var mockSet = new Mock<DbSet<Currency>>()
-                .SetupData(currencyList, o =>
-                {
-                    return currencyList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                var expected = CreateTestData.GetSampleCurrency();
-                expected.GoldPieces = 427;
-
-                mockContext.Mock<CharacterContext>()
-                  .Setup(x => x.Set<Currency>()).Returns(mockSet.Object);
-
-                //Act
-                ICurrencyRepository toTest = mockContext.Create<CurrencyRepository>();
-                toTest.Update(expected);
-
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<Currency>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-
-            }
-        }
+       
     }
 }

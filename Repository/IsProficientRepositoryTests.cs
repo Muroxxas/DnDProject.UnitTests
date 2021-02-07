@@ -82,44 +82,5 @@ namespace DnDProject.UnitTests.Repository
 
             }
         }
-
-        [Test]
-        public void IsProficientRepository_UpdateProficiencyRecord_ValidCall()
-        {
-            //Arrange
-            int saveChanges = 0;
-            List<IsProficient> proficienciesList = CreateTestData.GetListOfIsProficient();
-            var mockSet = new Mock<DbSet<IsProficient>>()
-                .SetupData(proficienciesList, o =>
-                {
-                    return proficienciesList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                var expected = CreateTestData.GetSampleIsProficient();
-                expected.StrengthSave = false;
-                expected.DexteritySave = false;
-                expected.ConstitutionSave = false;
-
-                mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.Set<IsProficient>()).Returns(mockSet.Object);
-
-                mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
-
-                //Act
-                IIsProficientRepository toTest = mockContext.Create<IsProficientRepository>();
-                toTest.Update(expected);
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<IsProficient>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-            }
-
-        }
     }
 }

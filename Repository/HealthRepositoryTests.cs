@@ -85,42 +85,7 @@ namespace DnDProject.UnitTests.Repository
 
         }
 
-        [Test]
-        public void HealthRepository_UpdateHealthRecord_ValidCall()
-        {
-            //Arrange
-            int saveChanges = 0;
-            List<Health> healthList = CreateTestData.GetListOfHealth();
-            var mockSet = new Mock<DbSet<Health>>()
-                .SetupData(healthList, o =>
-                {
-                    return healthList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.Set<Health>()).Returns(mockSet.Object);
-                mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.SaveChanges()).Callback(() => saveChanges = saveChanges + 1);
-
-                var expected = CreateTestData.GetSampleHealth();
-                expected.MaxHP = 200;
-                expected.DeathSaveSuccesses = 2;
-                IHealthRepository toTest = mockContext.Create<HealthRepository>();
-
-
-                //Act
-                toTest.Update(expected);
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<Health>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-
-            }
-        }
+      
 
     }
 }

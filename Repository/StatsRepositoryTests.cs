@@ -81,40 +81,5 @@ namespace DnDProject.UnitTests.Repository
             }
         }
 
-        [Test]
-        public void EFRepository_UpdateStatsRecord_ValidCall()
-        {
-            //Arrange
-
-            List<Stats> statsList = CreateTestData.GetListOfStats();
-            var mockSet = new Mock<DbSet<Stats>>()
-                .SetupData(statsList, o =>
-                {
-                    return statsList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-
-            using (var mockContext = AutoMock.GetLoose())
-            {
-                var expected = CreateTestData.GetSampleStats();
-                expected.Strength = 20;
-                expected.Dexterity = 20;
-                expected.Constitution = 24;
-                mockContext.Mock<CharacterContext>()
-                   .Setup(x => x.Set<Stats>()).Returns(mockSet.Object);
-
-
-                //Act
-                IStatsRepository toTest = mockContext.Create<StatsRepository>();
-                toTest.Update(expected);
-
-                //Assert
-                expected.Should().NotBeNull();
-                expected.Should().BeOfType<Stats>();
-                //Verifies that the object I wished to update was attached to the DbSet.
-                //Basically, that means EF confirms that the entity with expected's Primary key will be updated the next time Save is called.
-                mockSet.Verify(x => x.Attach(expected), Times.Once());
-
-            }
-        }
     }
 }
