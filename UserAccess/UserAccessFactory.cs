@@ -16,5 +16,9 @@ namespace DnDProject.UnitTests.UserAccess
         {
             return new BaseUserAccess(worker);
         }
+        public static ISpellManagerUserAccess getManagerUserAccess(IUnitOfWork worker)
+        {
+            return new SpellManagerUserAccess(worker);
+        }
     }
 }

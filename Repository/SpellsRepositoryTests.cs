@@ -158,8 +158,6 @@ namespace DnDProject.UnitTests.Repository
                 actual.Should().NotBeNull();
                 actual.Should().BeOfType<List<Spell>>();
                 actual.Should().BeEquivalentTo(expected);
-
-
             }
         }
 
@@ -469,40 +467,106 @@ namespace DnDProject.UnitTests.Repository
         {
             //Arrange
             List<Spell_Character> KnownSpells = CreateTestData.GetListOfKnownSpells();
-            var mockSet = new Mock<DbSet<Spell_Character>>()
+            List<Spell> spells = CreateTestData.GetListOfSpells();
+            
+            var mockKnownSpells = new Mock<DbSet<Spell_Character>>()
                 .SetupData(KnownSpells, o =>
                 {
                     return KnownSpells.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
+                });
+            var mockSpells = new Mock<DbSet<Spell>>()
+                .SetupData(spells, o =>
+                {
+                    return spells.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
                 });
 
             //Caleb learns Eldritch blast, somehow!
             Guid Caleb_id = Guid.Parse("11111111-2222-3333-4444-555555555555");
             Guid EldritchBlast_id = Guid.Parse("45c1a8cc-2e3e-4e29-8eeb-f9fa0cc9e27e");
 
-            var expected = new Spell_Character
+            Spell EldritchBlast = new Spell
             {
-                Spell_id = EldritchBlast_id,
-                Character_id = Caleb_id
+                Spell_id = Guid.Parse("45c1a8cc-2e3e-4e29-8eeb-f9fa0cc9e27e"),
+                Name = "Eldritch Blast",
+                Description = "Cast eldritch blast",
+                Level = 0,
+                School_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                CastingTime = "1 Action",
+                Duration = "Instant",
+                Range = "60 feet",
+                RequiresVerbal = true,
+                RequiresSomantic = true,
+                RequiresMaterial = true,
+                RequiresConcentration = false
             };
 
             using (var mockContext = AutoMock.GetLoose())
             {
                 mockContext.Mock<SpellsContext>()
-                    .Setup(x => x.KnownSpells).Returns(mockSet.Object);
+                    .Setup(x => x.Spells).Returns(mockSpells.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.KnownSpells).Returns(mockKnownSpells.Object);
 
                 //Act
                 ISpellsRepository toTest = mockContext.Create<SpellsRepository>();
                 toTest.CharacterLearnsSpell(Caleb_id, EldritchBlast_id);
+                var actual = toTest.GetSpellsKnownBy(Caleb_id);
+
 
                 //Assert
-
-                throw new NotImplementedException();
+                actual.Should().ContainEquivalentOf(EldritchBlast);
             }
         }
         [Test]
         public void SpellsRepository_CharacterForgetsSpell_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<Spell_Character> KnownSpells = CreateTestData.GetListOfKnownSpells();
+            List<Spell> spells = CreateTestData.GetListOfSpells();
+
+            var mockKnownSpells = new Mock<DbSet<Spell_Character>>()
+                .SetupData(KnownSpells, o =>
+                {
+                    return KnownSpells.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
+                });
+            var mockSpells = new Mock<DbSet<Spell>>()
+                .SetupData(spells, o =>
+                {
+                    return spells.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
+                });
+
+            //Caleb forgets Web of Fire!
+            Guid Caleb_id = Guid.Parse("11111111-2222-3333-4444-555555555555");
+            Spell WebOfFire = new Spell
+            {
+                Spell_id = Guid.Parse("51b4c563-2040-4c7d-a23e-cab8d5d3c73b"),
+                Name = "Widogast's Web Of Fire",
+                Description = "The caster deals a shitton of fire damage to the target.",
+                Level = 4,
+                School_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                CastingTime = "1 Action",
+                Duration = "Instant",
+                Range = "120 feet",
+                RequiresVerbal = true,
+                RequiresSomantic = true,
+                RequiresMaterial = true,
+                RequiresConcentration = false
+            };
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Spells).Returns(mockSpells.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.KnownSpells).Returns(mockKnownSpells.Object);
+
+                //Act
+                ISpellsRepository toTest = mockContext.Create<SpellsRepository>();
+                toTest.CharacterForgetsSpell(Caleb_id, WebOfFire.Spell_id);
+                var actual = toTest.GetSpellsKnownBy(Caleb_id);
+
+                actual.Should().NotContain(WebOfFire);
+            }
         }
     }
 }

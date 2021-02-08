@@ -371,7 +371,25 @@ namespace DnDProject.UnitTests
                 RequiresMaterial = true,
                 RequiresConcentration = false
             };
+
+            Spell EldritchBlast = new Spell
+            {
+                Spell_id = Guid.Parse("45c1a8cc-2e3e-4e29-8eeb-f9fa0cc9e27e"),
+                Name = "Eldritch Blast",
+                Description = "Cast eldritch blast",
+                Level = 0,
+                School_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                CastingTime = "1 Action",
+                Duration = "Instant",
+                Range = "60 feet",
+                RequiresVerbal = true,
+                RequiresSomantic = true,
+                RequiresMaterial = true,
+                RequiresConcentration = false
+            };
+
             spells.Add(WebOfFire);
+            spells.Add(EldritchBlast);
             return spells;
 
         }
