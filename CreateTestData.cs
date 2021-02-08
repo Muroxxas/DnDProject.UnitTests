@@ -450,5 +450,81 @@ namespace DnDProject.UnitTests
             return knownSpells;
 
         }
+        public static School GetSampleSchool()
+        {
+            School evocation = new School()
+            {
+                School_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Name = "Evocation"
+            };
+            return evocation;
+        }
+
+        public static List<School> GetListOfSchools()
+        {
+            List<School> Schools = new List<School>();
+
+            Schools.Add(GetSampleSchool());
+
+            School Conjuration = new School()
+            {
+                School_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                Name = "Conjuration"
+            };
+            Schools.Add(Conjuration);
+
+            School Abjuration = new School()
+            {
+                School_id = Guid.Parse("c73d220e-e0fa-41c7-9f8a-241030620927"),
+                Name = "Abjuration"
+            };
+
+            Schools.Add(Abjuration);
+
+            return Schools;
+        }
+
+        public static Spell_Class GetSampleCastableBy()
+        {
+            Spell_Class Tower_Wizard = new Spell_Class
+            {
+                Spell_id = Guid.Parse("46d10bb8-84d2-408d-a928-5847ff99461f"),
+                Class_id = Guid.Parse("b74e228f-015d-45b4-af0f-a6781976535a")
+            };
+            return Tower_Wizard;
+        }
+
+        public static List<Spell_Class> GetListOfCastableByRecords()
+        {
+            List<Spell_Class> castableByList = new List<Spell_Class>();
+
+            Spell_Class Tower_Wizard = GetSampleCastableBy();
+
+            castableByList.Add(Tower_Wizard);
+
+            Spell_Class WebOfFire_Wizard = new Spell_Class()
+            {
+                Spell_id = Guid.Parse("51b4c563-2040-4c7d-a23e-cab8d5d3c73b"),
+                Class_id = Guid.Parse("b74e228f-015d-45b4-af0f-a6781976535a")
+            };
+            castableByList.Add(WebOfFire_Wizard);
+
+            Spell_Class VoltaicBolt_Wizard = new Spell_Class()
+            {
+                Spell_id = Guid.Parse("a9756f3d-55d0-40cd-8083-6b547e4932ab"),
+                Class_id = Guid.Parse("b74e228f-015d-45b4-af0f-a6781976535a")
+            };
+
+            castableByList.Add(VoltaicBolt_Wizard);
+
+            Spell_Class EldritchBlast_Warlock = new Spell_Class()
+            {
+                Spell_id = Guid.Parse("45c1a8cc-2e3e-4e29-8eeb-f9fa0cc9e27e"),
+                Class_id = Guid.Parse("d29f1c68-1d94-462a-bc1e-3f61a7904983")
+            };
+
+            castableByList.Add(EldritchBlast_Warlock);
+            return castableByList;
+        }
     }
 }
