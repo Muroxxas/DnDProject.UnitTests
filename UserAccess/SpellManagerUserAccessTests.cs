@@ -42,7 +42,7 @@ namespace DnDProject.UnitTests.UserAccess
 
                 //Act
                 IUnitOfWork UoW = mockContext.Create<UnitOfWork>();
-                ISpellManagerUserAccess toTest = UserAccessFactory.getManagerUserAccess(UoW);
+                ISpellManagerUserAccess toTest = UserAccessFactory.getSpellManagerUserAccess(UoW);
                 toTest.AddSpell(expected);
                 var actual = toTest.GetSpell(id);
 
@@ -78,7 +78,7 @@ namespace DnDProject.UnitTests.UserAccess
 
                 //Act
                 IUnitOfWork UoW = mockContext.Create<UnitOfWork>();
-                ISpellManagerUserAccess toTest = UserAccessFactory.getManagerUserAccess(UoW);
+                ISpellManagerUserAccess toTest = UserAccessFactory.getSpellManagerUserAccess(UoW);
                 var toBeDeleted = CreateTestData.GetSampleSpell();
                 toTest.RemoveSpell(toBeDeleted);
                 var NotExpected = CreateTestData.GetSampleSpell();
@@ -109,7 +109,7 @@ namespace DnDProject.UnitTests.UserAccess
 
                 //Act
                 IUnitOfWork UoW = mockContext.Create<UnitOfWork>();
-                ISpellManagerUserAccess toTest = UserAccessFactory.getManagerUserAccess(UoW);
+                ISpellManagerUserAccess toTest = UserAccessFactory.getSpellManagerUserAccess(UoW);
                 toTest.AddSpellMaterials(expected);
                 var actual = toTest.GetSpellMaterials(expected.Spell_id);
 
@@ -144,7 +144,7 @@ namespace DnDProject.UnitTests.UserAccess
 
                 //act
                 IUnitOfWork UoW = mockContext.Create<UnitOfWork>();
-                ISpellManagerUserAccess toTest = UserAccessFactory.getManagerUserAccess(UoW);
+                ISpellManagerUserAccess toTest = UserAccessFactory.getSpellManagerUserAccess(UoW);
                 toTest.DeleteSpellMaterials(toBeDeleted);
 
                 //Assert
@@ -174,7 +174,7 @@ namespace DnDProject.UnitTests.UserAccess
 
                 //act
                 IUnitOfWork UoW = mockContext.Create<UnitOfWork>();
-                ISpellManagerUserAccess toTest = UserAccessFactory.getManagerUserAccess(UoW);
+                ISpellManagerUserAccess toTest = UserAccessFactory.getSpellManagerUserAccess(UoW);
                 toTest.DeleteSpellMaterialsById(toBeDeleted.Spell_id);
 
                 //Assert

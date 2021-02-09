@@ -1,5 +1,6 @@
 ﻿using DnDProject.Entities.Character.DataModels;
 using DnDProject.Entities.Character.ViewModels;
+using DnDProject.Entities.Items.DataModels;
 using DnDProject.Entities.Spells.DataModels;
 using System;
 using System.Collections.Generic;
@@ -543,6 +544,163 @@ namespace DnDProject.UnitTests
 
             castableByList.Add(EldritchBlast_Warlock);
             return castableByList;
+        }
+
+        public static Item GetSampleItem()
+        {
+            Item Whisper = new Item()
+            {
+                Item_id = Guid.Parse("709135c3-6f89-46cb-80ae-4097b621e3b0"),
+                Name = "Whisper",
+                Description = "A Legendary dagger that allows you to teleport to wherever it strikes",
+                isEquippable = true,
+                isConsumable = false,
+                requiresAttunement = true,
+                Value = 999
+            };
+            return Whisper;
+        }
+
+        public static List<Item> GetListOfItems()
+        {
+            List <Item> items = new List<Item>();
+            Item whisper = GetSampleItem();
+            items.Add(whisper);
+
+            Item TitanstoneKnuckles = new Item
+            {
+                Item_id = Guid.Parse("026a7dff-5e85-4e6d-94c6-6613828e5df6"),
+                Name = "Titanstone Knuckles",
+                Description = "Gauntlets fashioned from the Titan of Stone, enhancing your strength to rival that of the gods.",
+                isEquippable = true,
+                isConsumable = false,
+                requiresAttunement = true,
+                Value = 999
+            };
+
+            items.Add(TitanstoneKnuckles);
+
+            Item HealingPotion = new Item
+            {
+                Item_id = Guid.Parse("2caa23dc-15e6-4a57-9bb6-62f6d8636ff7"),
+                Name = "Healing potion",
+                Description = "Upon consumption of the whole potion, the imbiber heals for 2d4+2 health.",
+                isEquippable = false,
+                isConsumable = true,
+                requiresAttunement = false,
+                Value = 50
+            };
+            items.Add(HealingPotion);
+
+            return items;
+        }
+
+        public static Character_Item GetSampleHeldItem()
+        {
+            Character_Item Vax_Whisper = new Character_Item()
+            {
+                Item_id = Guid.Parse("709135c3-6f89-46cb-80ae-4097b621e3b0"),
+                Character_id = Guid.Parse("e3a0faef-99da-4d15-bff1-b535a42b955c")
+            };
+            return Vax_Whisper;
+        }
+        public static List<Character_Item> GetListOfHeldItems()
+        {
+            List<Character_Item> heldItems = new List<Character_Item>();
+
+            Character_Item Vax_Whisper = GetSampleHeldItem();
+            heldItems.Add(Vax_Whisper);
+
+            Character_Item Grog_Knuckles = new Character_Item
+            {
+                Character_id = Guid.Parse("96992cfa-9e3b-480f-ab06-46539d3666f6"),
+                Item_id = Guid.Parse("026a7dff-5e85-4e6d-94c6-6613828e5df6")
+            };
+            heldItems.Add(Grog_Knuckles);
+
+            Character_Item Vax_Potion = new Character_Item
+            {
+                Character_id = Guid.Parse("e3a0faef-99da-4d15-bff1-b535a42b955c"),
+                Item_id = Guid.Parse("2caa23dc-15e6-4a57-9bb6-62f6d8636ff7")
+            };
+
+            heldItems.Add(Vax_Potion);
+
+            return heldItems;
+
+        }
+
+        public static Tag GetSampleTag()
+        {
+            Tag Weapon = new Tag
+            {
+                Tag_id = Guid.Parse("172e8478-e1bd-49ba-a7a7-6455d5a58c6e"),
+                TagName = "Weapon"
+            };
+            return Weapon;
+        }
+        public static List<Tag> GetListOfTags()
+        {
+            List<Tag> tags = new List<Tag>();
+            Tag weapon = GetSampleTag();
+            tags.Add(weapon);
+
+            Tag HeavyArmor = new Tag
+            {
+                Tag_id = Guid.Parse("35d27332-ccc3-40b2-b2d1-a91715ad0917"),
+                TagName = "Heavy Armor"
+            };
+            tags.Add(HeavyArmor);
+
+            Tag Wondorous = new Tag
+            {
+                Tag_id = Guid.Parse("e2c7f8a3-52ba-4dc2-baaf-4026718b1f03"),
+                TagName = "Wondorous Item"
+            };
+            tags.Add(Wondorous);
+            return tags;
+        }
+
+        public static Item_Tag GetSampleItemTag()
+        {
+            Item_Tag Whisper_Weapon = new Item_Tag
+            {
+                Item_id = Guid.Parse("709135c3-6f89-46cb-80ae-4097b621e3b0"),
+                Tag_id = Guid.Parse("172e8478-e1bd-49ba-a7a7-6455d5a58c6e")
+            };
+            return Whisper_Weapon;
+        }
+
+        public static List<Item_Tag> GetListOfItemTags()
+        {
+            List<Item_Tag> ITRecords = new List<Item_Tag>();
+
+            Item_Tag Whisper_Weapon = GetSampleItemTag();
+            ITRecords.Add(Whisper_Weapon);
+
+            Item_Tag Whisper_Wondorous = new Item_Tag
+            {
+                Item_id = Guid.Parse("709135c3-6f89-46cb-80ae-4097b621e3b0"),
+                Tag_id = Guid.Parse("e2c7f8a3-52ba-4dc2-baaf-4026718b1f03")
+            };
+            ITRecords.Add(Whisper_Wondorous);
+
+            Item_Tag Knuckles_Wondorous = new Item_Tag
+            {
+                Item_id = Guid.Parse("026a7dff-5e85-4e6d-94c6-6613828e5df6"),
+                Tag_id = Guid.Parse("e2c7f8a3-52ba-4dc2-baaf-4026718b1f03")
+            };
+
+            ITRecords.Add(Knuckles_Wondorous);
+
+            Item_Tag Knuckles_HeavyArmor = new Item_Tag
+            {
+                Item_id = Guid.Parse("026a7dff-5e85-4e6d-94c6-6613828e5df6"),
+                Tag_id = Guid.Parse("35d27332-ccc3-40b2-b2d1-a91715ad0917")
+            };
+            ITRecords.Add(Knuckles_HeavyArmor);
+
+            return ITRecords;
         }
     }
 }
