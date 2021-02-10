@@ -1,5 +1,6 @@
 ﻿using DnDProject.Entities.Character.DataModels;
 using DnDProject.Entities.Character.ViewModels;
+using DnDProject.Entities.Class.DataModels;
 using DnDProject.Entities.Items.DataModels;
 using DnDProject.Entities.Spells.DataModels;
 using System;
@@ -315,7 +316,6 @@ namespace DnDProject.UnitTests
             };
             return spell;
         }
-
         public static List<Spell> GetListOfSpells()
         {
             List<Spell> spells = new List<Spell>();
@@ -394,7 +394,6 @@ namespace DnDProject.UnitTests
             return spells;
 
         }
-
         public static Material GetSampleMaterial()
         {
             Material material = new Material()
@@ -404,7 +403,6 @@ namespace DnDProject.UnitTests
         };
         return material;
         }
-
         public static List<Material> GetListOfMaterials()
         {
             List<Material> materials = new List<Material>();
@@ -425,7 +423,6 @@ namespace DnDProject.UnitTests
             materials.Add(revivify);
             return materials;
         }
-
         public static Spell_Character GetSampleKnownSpell()
         {
             Spell_Character knownSpellRecord = new Spell_Character()
@@ -478,7 +475,6 @@ namespace DnDProject.UnitTests
             };
             return evocation;
         }
-
         public static List<School> GetListOfSchools()
         {
             List<School> Schools = new List<School>();
@@ -502,7 +498,6 @@ namespace DnDProject.UnitTests
 
             return Schools;
         }
-
         public static Spell_Class GetSampleCastableBy()
         {
             Spell_Class Tower_Wizard = new Spell_Class
@@ -512,7 +507,6 @@ namespace DnDProject.UnitTests
             };
             return Tower_Wizard;
         }
-
         public static List<Spell_Class> GetListOfCastableByRecords()
         {
             List<Spell_Class> castableByList = new List<Spell_Class>();
@@ -560,7 +554,6 @@ namespace DnDProject.UnitTests
             };
             return Whisper;
         }
-
         public static List<Item> GetListOfItems()
         {
             List <Item> items = new List<Item>();
@@ -594,7 +587,6 @@ namespace DnDProject.UnitTests
 
             return items;
         }
-
         public static Character_Item GetSampleHeldItem()
         {
             Character_Item Vax_Whisper = new Character_Item()
@@ -629,7 +621,6 @@ namespace DnDProject.UnitTests
             return heldItems;
 
         }
-
         public static Tag GetSampleTag()
         {
             Tag Weapon = new Tag
@@ -660,7 +651,6 @@ namespace DnDProject.UnitTests
             tags.Add(Wondorous);
             return tags;
         }
-
         public static Item_Tag GetSampleItemTag()
         {
             Item_Tag Whisper_Weapon = new Item_Tag
@@ -670,7 +660,6 @@ namespace DnDProject.UnitTests
             };
             return Whisper_Weapon;
         }
-
         public static List<Item_Tag> GetListOfItemTags()
         {
             List<Item_Tag> ITRecords = new List<Item_Tag>();
@@ -702,5 +691,130 @@ namespace DnDProject.UnitTests
 
             return ITRecords;
         }
+
+
+        public static PlayableClass GetSampleClass()
+        {
+            PlayableClass Fighter = new PlayableClass
+            {
+                Class_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874"),
+                Name = "Fighter",
+                Description = "Swing swords n stuff!",
+                IsCaster = false,
+                HitDiceSize = 10,
+                casterCapability = 0
+            };
+            return Fighter;
+        }
+        public static List<PlayableClass> GetPlayableClasses()
+        {
+            List<PlayableClass> playableClasses = new List<PlayableClass>();
+
+            PlayableClass Fighter = GetSampleClass();
+            playableClasses.Add(Fighter);
+
+            PlayableClass Wizard = new PlayableClass
+            {
+                Class_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b"),
+                Name = "Wizard",
+                Description = "Book nerd!",
+                IsCaster = true,
+                HitDiceSize = 6,
+                casterCapability = 1
+            };
+            playableClasses.Add(Wizard);
+
+            PlayableClass Ranger = new PlayableClass
+            {
+                Class_id = Guid.Parse("969c08ca-f983-4ddd-b351-31962f2429cd"),
+                Name = "Ranger",
+                Description = "Bows!",
+                IsCaster = true,
+                HitDiceSize = 8,
+                casterCapability = .5
+            };
+            playableClasses.Add(Ranger);
+            return playableClasses;
+            
+        }
+        public static ClassAbility GetClassAbility()
+        {
+            ClassAbility SecondWind = new ClassAbility
+            {
+                ClassAbility_id = Guid.Parse("500f04e7-d080-4ba8-9a22-57a64d5f6a25"),
+                Class_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874"),
+                Name = "Second Wind",
+                Description = "You have a limited well of stamina you can draw upon to protect yourself from harm.",
+                LevelLearned = 1
+            };
+            return SecondWind;
+        }
+        public static List<ClassAbility>GetListOfClassAbility()
+        {
+            List<ClassAbility> listofClassAbilities = new List<ClassAbility>();
+            ClassAbility SecondWind = GetClassAbility();
+            listofClassAbilities.Add(SecondWind);
+
+            ClassAbility SpellMastery = new ClassAbility
+            {
+                ClassAbility_id = Guid.Parse("19e51104-8590-4199-b7e2-079993bb8ccb"),
+                Class_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b"),
+                Name = "Spell Master",
+                Description = "Choose a 1st level spell and a 2nd level spell in your spellbook. As long as you have them prepared, you can cast them without consuming a spell slot.",
+                LevelLearned = 18
+            };
+            listofClassAbilities.Add(SpellMastery);
+
+            ClassAbility Vanish = new ClassAbility
+            {
+                ClassAbility_id = Guid.Parse("97bd8231-a001-4228-824f-7606202913b0"),
+                Class_id = Guid.Parse("969c08ca-f983-4ddd-b351-31962f2429cd"),
+                Name = "Vanish",
+                Description = "You can Hide as a bonus action.",
+                LevelLearned = 14
+            };
+            listofClassAbilities.Add(Vanish);
+            return listofClassAbilities;           
+        }
+        public static Character_Class_Subclass GetCharacter_Class_Subclass()
+        {
+            Character_Class_Subclass Caleb_Wizard_Transmutation = new Character_Class_Subclass
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Class_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b"),
+                Subclass_id = Guid.Parse("c8d2e23a-a193-4e06-8814-9180d4830732"),
+                RemainingHitDice = 12,
+                ClassLevel = 12
+            };
+            return Caleb_Wizard_Transmutation;
+        }
+        public static List<Character_Class_Subclass> GetListOfCharacter_Class_Subclass()
+        {
+            List<Character_Class_Subclass> knownClasses = new List<Character_Class_Subclass>();
+
+            var Caleb_Wizard_Transmutation = GetCharacter_Class_Subclass();
+            knownClasses.Add(Caleb_Wizard_Transmutation);
+
+            Character_Class_Subclass Percy_Fighter_Gunslinger = new Character_Class_Subclass
+            {
+                Character_id = Guid.Parse("6983e8dc-3e3c-4853-ac49-ba33f236723a"),
+                Class_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874"),
+                Subclass_id = Guid.Parse("a8e9e19f-b04f-4d6c-baf8-ada5cd40c30b"),
+                RemainingHitDice = 20,
+                ClassLevel = 20
+            };
+            knownClasses.Add(Percy_Fighter_Gunslinger);
+            Character_Class_Subclass Vex_Ranger_BeastMaster = new Character_Class_Subclass
+            {
+                Character_id = Guid.Parse("da7d6227-d330-44ab-8001-880dbf52110a"),
+                Class_id = Guid.Parse("969c08ca-f983-4ddd-b351-31962f2429cd"),
+                Subclass_id = Guid.Parse("c7de67ae-3a65-4261-9c09-05a7b0c527bb"),
+                RemainingHitDice = 20,
+                ClassLevel = 20
+            };
+            knownClasses.Add(Vex_Ranger_BeastMaster);
+            return knownClasses;
+        }
     }
+
 }
