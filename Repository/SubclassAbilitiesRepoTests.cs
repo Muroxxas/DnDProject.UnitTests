@@ -116,7 +116,7 @@ namespace DnDProject.UnitTests.Repository
 
                 //Act
                 var toTest = mockContext.Create<SubclassAbilityRepository>();
-                var actual = toTest.GetAbilitiesOfSubclass(gunslinger_id);
+                var actual = toTest.GetAllAbilitiesOfSubclass(gunslinger_id);
 
                 //Assert
                 actual.Should().BeEquivalentTo(expected);

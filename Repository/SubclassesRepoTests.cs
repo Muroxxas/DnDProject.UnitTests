@@ -192,7 +192,7 @@ namespace DnDProject.UnitTests.Repository
 
                 //Act
                 var toTest = mockContext.Create<SubclassRepository>();
-                toTest.CharacterForgetsSubclassOfClass(
+                toTest.CharacterOfClassForgetsSubclass(
                     expected.Character_id,
                     expected.Class_id,
                     Guid.Parse("c8d2e23a-a193-4e06-8814-9180d4830732"));

@@ -139,7 +139,6 @@
     <Compile Include="Repository\StatsRepositoryTests.cs" />
     <Compile Include="Repository\SubclassAbilitiesRepoTests.cs" />
     <Compile Include="Repository\SubclassesRepoTests.cs" />
-    <Compile Include="Unit of Work\UoWFactory.cs" />
     <Compile Include="UserAccess\BaseUserAccessTests.cs" />
     <Compile Include="UserAccess\ItemManagerUserAccessTests.cs" />
     <Compile Include="UserAccess\PlayableClassManagerUserAccessTests.cs" />

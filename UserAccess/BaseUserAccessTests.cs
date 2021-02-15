@@ -7,9 +7,9 @@ using DnDProject.Backend.Unit_Of_Work.Interfaces;
 using DnDProject.Backend.UserAccess.Implementations;
 using DnDProject.Backend.UserAccess.Interfaces;
 using DnDProject.Entities.Character.DataModels;
+using DnDProject.Entities.Class.DataModels;
 using DnDProject.Entities.Items.DataModels;
 using DnDProject.Entities.Spells.DataModels;
-using DnDProject.UnitTests.Unit_of_Work;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -1201,89 +1201,608 @@ namespace DnDProject.UnitTests.UserAccess
         [Test]
         public void BaseUserAccess_GetAllPlayableClasses_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<PlayableClass> listofPlayableClasses = CreateTestData.GetPlayableClasses();
+
+            var mockSet = new Mock<DbSet<PlayableClass>>()
+                .SetupData(listofPlayableClasses, o =>
+                {
+                    return listofPlayableClasses.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+                });
+
+            List<PlayableClass> expected = CreateTestData.GetPlayableClasses();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Classes).Returns(mockSet.Object);
+
+
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<PlayableClass>()).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetAllPlayableClasses();
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+            }
         }
         [Test]
         public void BaseUserAccess_CharacterLearnsClass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<Character_Class_Subclass> listofCharacter_Class_Subclass = new List<Character_Class_Subclass>();
+
+            var mockSet = new Mock<DbSet<Character_Class_Subclass>>()
+                .SetupData(listofCharacter_Class_Subclass, o =>
+                {
+                    return listofCharacter_Class_Subclass.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+                });
+            var Percy_id = Guid.Parse("6983e8dc-3e3c-4853-ac49-ba33f236723a");
+            var Fighter_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874");
+            var expected = new Character_Class_Subclass
+            {
+                Character_id = Percy_id,
+                Class_id = Fighter_id,
+                ClassLevel = 1,
+                RemainingHitDice = 1
+            };
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.KnownClasses).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                toTest.CharacterLearnsClass(Percy_id, Fighter_id);
+                //Assert
+                listofCharacter_Class_Subclass.Should().ContainEquivalentOf(expected);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_CharacterLearnsClasses_ValidCall()
+        {
+            //Arrange
+            List<Character_Class_Subclass> listofCharacter_Class_Subclass = new List<Character_Class_Subclass>();
+
+            var mockSet = new Mock<DbSet<Character_Class_Subclass>>()
+                .SetupData(listofCharacter_Class_Subclass, o =>
+                {
+                    return listofCharacter_Class_Subclass.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+                });
+            var Percy_id = Guid.Parse("6983e8dc-3e3c-4853-ac49-ba33f236723a");
+            var learnedClasses = new List<Guid>();
+            var Fighter_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874");
+            learnedClasses.Add(Fighter_id);
+            var Ranger_id = Guid.Parse("da7d6227-d330-44ab-8001-880dbf52110a");
+            learnedClasses.Add(Ranger_id);
+
+            var expected = new List<Character_Class_Subclass>();
+            var Percy_Fighter = new Character_Class_Subclass
+            {
+                Character_id = Percy_id,
+                Class_id = Fighter_id,
+                ClassLevel = 1,
+                RemainingHitDice = 1
+            };
+            expected.Add(Percy_Fighter);
+            var Percy_Ranger = new Character_Class_Subclass
+            {
+                Character_id = Percy_id,
+                Class_id = Ranger_id,
+                ClassLevel = 1,
+                RemainingHitDice = 1
+            };
+            expected.Add(Percy_Ranger);
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.KnownClasses).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                toTest.CharacterLearnsClasses(Percy_id, learnedClasses);
+                //Assert
+                listofCharacter_Class_Subclass.Should().BeEquivalentTo(expected);
+            }
         }
         [Test]
         public void BaseUserAccess_CharacterForgetsClass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<Character_Class_Subclass> listofCharacter_Class_Subclass = CreateTestData.GetListOfCharacter_Class_Subclass();
+
+            var mockSet = new Mock<DbSet<Character_Class_Subclass>>()
+                .SetupData(listofCharacter_Class_Subclass, o =>
+                {
+                    return listofCharacter_Class_Subclass.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+                });
+            var toBeDeleted = new Character_Class_Subclass
+            {
+                Character_id = Guid.Parse("6983e8dc-3e3c-4853-ac49-ba33f236723a"),
+                Class_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874")
+            };
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.KnownClasses).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                toTest.CharacterForgetsClass(toBeDeleted.Character_id, toBeDeleted.Class_id);
+
+                //Assert
+                listofCharacter_Class_Subclass.Should().NotContain(toBeDeleted);
+            }
         }
 
         [Test]
         public void BaseUserAccess_GetClassesOfCharacter_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<PlayableClass> playableClasses = CreateTestData.GetPlayableClasses();
+            List<Character_Class_Subclass> knownclasses = CreateTestData.GetListOfCharacter_Class_Subclass();
+
+            var classMockSet = new Mock<DbSet<PlayableClass>>()
+                .SetupData(playableClasses, o =>
+                {
+                    return playableClasses.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+                });
+            var knownClassesMockSet = new Mock<DbSet<Character_Class_Subclass>>()
+                .SetupData(knownclasses, o =>
+                {
+                    return knownclasses.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+            var Percy_id = Guid.Parse("6983e8dc-3e3c-4853-ac49-ba33f236723a");
+            var expected = CreateTestData.GetSampleClass();
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Classes).Returns(classMockSet.Object);
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.KnownClasses).Returns(knownClassesMockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetClassesOfCharacter(Percy_id);
+
+                //Assert
+                actual.Should().ContainEquivalentOf(expected);
+
+            }
         }
         [Test]
         public void Base_UserAccess_GetKnownClassRecordOfCharacterAndClass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<Character_Class_Subclass> listofCharacter_Class_Subclass = CreateTestData.GetListOfCharacter_Class_Subclass();
+
+            var mockSet = new Mock<DbSet<Character_Class_Subclass>>()
+                .SetupData(listofCharacter_Class_Subclass, o =>
+                {
+                    return listofCharacter_Class_Subclass.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+                });
+            var expected = new Character_Class_Subclass
+            {
+                Character_id = Guid.Parse("da7d6227-d330-44ab-8001-880dbf52110a"),
+                Class_id = Guid.Parse("969c08ca-f983-4ddd-b351-31962f2429cd"),
+                Subclass_id = Guid.Parse("c7de67ae-3a65-4261-9c09-05a7b0c527bb"),
+                RemainingHitDice = 20,
+                ClassLevel = 20
+            };
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.KnownClasses).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetKnownClassRecordOfCharaterAndClass(expected.Character_id, expected.Class_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+            }
         }
         [Test]
         public void BaseUserAccess_GetPlayableClass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+
+            List<PlayableClass> playableClasses = CreateTestData.GetPlayableClasses();
+
+            var mockSet = new Mock<DbSet<PlayableClass>>()
+                .SetupData(playableClasses, o =>
+                {
+                    return playableClasses.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+                });
+            var expected = CreateTestData.GetSampleClass();
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<PlayableClass>()).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetPlayableClass(expected.Class_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+            }
         }
         [Test]
         public void BaseUserAccess_GetAbilitiesOfClass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<ClassAbility> listofClassAbility = CreateTestData.GetListOfClassAbility();
+
+            var mockSet = new Mock<DbSet<ClassAbility>>()
+                .SetupData(listofClassAbility, o =>
+                {
+                    return listofClassAbility.Single(x => x.ClassAbility_id.CompareTo(o.First()) == 0);
+                });
+            ClassAbility expected = CreateTestData.GetClassAbility();
+            var notExpected1 = new ClassAbility
+            {
+                ClassAbility_id = Guid.Parse("19e51104-8590-4199-b7e2-079993bb8ccb"),
+                Class_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b"),
+                Name = "Spell Master",
+                Description = "Choose a 1st level spell and a 2nd level spell in your spellbook. As long as you have them prepared, you can cast them without consuming a spell slot.",
+                LevelLearned = 18
+            };
+            var notExpected2 = new ClassAbility
+            {
+                ClassAbility_id = Guid.Parse("97bd8231-a001-4228-824f-7606202913b0"),
+                Class_id = Guid.Parse("969c08ca-f983-4ddd-b351-31962f2429cd"),
+                Name = "Vanish",
+                Description = "You can Hide as a bonus action.",
+                LevelLearned = 14
+            };
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.ClassAbilities).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetAbilitiesOfClass(expected.Class_id);
+
+                //Assert
+                actual.Should().ContainEquivalentOf(expected);
+                actual.Should().NotContain(notExpected1);
+                actual.Should().NotContain(notExpected2);
+                actual.Should().NotContainNulls();
+                actual.Should().NotBeEmpty();
+            }
         }
         [Test]
         public void BaseUserAccess_GetAbilitiesOfClassAtOrBelowLevel_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<ClassAbility> listofClassAbility = CreateTestData.GetListOfClassAbility();
+
+            var mockSet = new Mock<DbSet<ClassAbility>>()
+                .SetupData(listofClassAbility, o =>
+                {
+                    return listofClassAbility.Single(x => x.ClassAbility_id.CompareTo(o.First()) == 0);
+                });
+            ClassAbility expected = new ClassAbility
+            {
+                ClassAbility_id = Guid.Parse("97bd8231-a001-4228-824f-7606202913b0"),
+                Class_id = Guid.Parse("969c08ca-f983-4ddd-b351-31962f2429cd"),
+                Name = "Vanish",
+                Description = "You can Hide as a bonus action.",
+                LevelLearned = 14
+            };
+            var notExpected1 = CreateTestData.GetClassAbility();
+            var notExpected2 = new ClassAbility
+            {
+                ClassAbility_id = Guid.Parse("19e51104-8590-4199-b7e2-079993bb8ccb"),
+                Class_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b"),
+                Name = "Spell Master",
+                Description = "Choose a 1st level spell and a 2nd level spell in your spellbook. As long as you have them prepared, you can cast them without consuming a spell slot.",
+                LevelLearned = 18
+            };
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.ClassAbilities).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetAbilitiesOfClassAtOrBelowLevel(expected.Class_id, 14);
+
+                //Assert
+                actual.Should().ContainEquivalentOf(expected);
+                actual.Should().NotContain(notExpected1);
+                actual.Should().NotContain(notExpected2);
+                actual.Should().NotContainNulls();
+                actual.Should().NotBeEmpty();
+            }
         }
         [Test]
         public void BaseUserAccess_GetAbility_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<ClassAbility> listofClassAbility = CreateTestData.GetListOfClassAbility();
+
+            var mockSet = new Mock<DbSet<ClassAbility>>()
+                .SetupData(listofClassAbility, o =>
+                {
+                    return listofClassAbility.Single(x => x.ClassAbility_id.CompareTo(o.First()) == 0);
+                });
+            var expected = CreateTestData.GetClassAbility();
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<ClassAbility>()).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetAbility(expected.ClassAbility_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+            }
         }
-        [Test]
-        public void BaseUserAccess_GetAbilityOfSubclass_ValidCall()
-        {
-            throw new NotImplementedException();
-        }
+
 
 
 
         [Test]
         public void BaseUserAccess_GetSubclass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<Subclass> listofSubclass = CreateTestData.GetListOfSubclass();
+
+            var mockSet = new Mock<DbSet<Subclass>>()
+                .SetupData(listofSubclass, o =>
+                {
+                    return listofSubclass.Single(x => x.Subclass_id.CompareTo(o.First()) == 0);
+                });
+            var expected = CreateTestData.GetSubclass();
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<Subclass>()).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetSubclass(expected.Subclass_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+            }
         }
         [Test]
         public void BaseUserAccess_GetAllSubclassesForClass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<Subclass> subclasses = CreateTestData.GetListOfSubclass();
+            var subclassesMockSet = new Mock<DbSet<Subclass>>()
+                .SetupData(subclasses, o =>
+                {
+                    return subclasses.Single(x => x.Subclass_id.CompareTo(o.First()) == 0);
+                });
+
+            List<Subclass> expected = new List<Subclass>();
+            Subclass gunslinger = CreateTestData.GetSubclass();
+            expected.Add(gunslinger);
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Subclasses).Returns(subclassesMockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetAllSubclassesForClass(gunslinger.Class_id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<List<Subclass>>();
+                expected.Should().BeOfType<List<Subclass>>();
+                actual.Should().BeEquivalentTo(expected);
+
+            }
         }
         [Test]
         public void BaseUserAccess_CharacterOfClass_LearnsSubclass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<Character_Class_Subclass> knownClasses = new List<Character_Class_Subclass>();
+            Character_Class_Subclass Caleb_Wizard_Blank = new Character_Class_Subclass
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Class_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b"),
+                RemainingHitDice = 12,
+                ClassLevel = 12
+            };
+            knownClasses.Add(Caleb_Wizard_Blank);
+            var mockSet = new Mock<DbSet<Character_Class_Subclass>>()
+                .SetupData(knownClasses, o =>
+                {
+                    return knownClasses.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+            var expected = CreateTestData.GetCharacter_Class_Subclass();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.KnownClasses).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                toTest.CharacterOfClassLearnsSubclass(
+                    Caleb_Wizard_Blank.Character_id,
+                    Caleb_Wizard_Blank.Class_id,
+                    Guid.Parse("c8d2e23a-a193-4e06-8814-9180d4830732"));
+
+                var actual = knownClasses.First();
+
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Character_Class_Subclass>();
+                expected.Should().BeOfType<Character_Class_Subclass>();
+                actual.Should().BeEquivalentTo(expected);
+            }
         }
         [Test]
         public void BaseUserAccess_CharacterOfClassForgetsSubclass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<Character_Class_Subclass> knownClasses = CreateTestData.GetListOfCharacter_Class_Subclass();
+            var mockSet = new Mock<DbSet<Character_Class_Subclass>>()
+               .SetupData(knownClasses, o =>
+               {
+                   return knownClasses.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+               });
+            Character_Class_Subclass expected = new Character_Class_Subclass
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Class_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b"),
+                RemainingHitDice = 12,
+                ClassLevel = 12
+            };
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.KnownClasses).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                toTest.CharacterOfClassForgetsSubclass(
+                    expected.Character_id,
+                    expected.Class_id,
+                    Guid.Parse("c8d2e23a-a193-4e06-8814-9180d4830732"));
+
+                var actual = knownClasses.First();
+
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Character_Class_Subclass>();
+                expected.Should().BeOfType<Character_Class_Subclass>();
+                actual.Should().BeEquivalentTo(expected);
+            }
         }
 
 
+        [Test]
+        public void BaseUserAccess_GetSubclassAbility_ValidCall()
+        {
+            //Arrange
+            List<SubclassAbility> listofSubclassAbility = CreateTestData.GetListOfSubclassAbility();
+            SubclassAbility expected = CreateTestData.GetSubclassAbility();
+            var mockSet = new Mock<DbSet<SubclassAbility>>()
+                .SetupData(listofSubclassAbility, o =>
+                {
+                    return listofSubclassAbility.Single(x => x.SubclassAbility_id.CompareTo(o.First()) == 0);
+                });
 
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<SubclassAbility>()).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetSubclassAbility(expected.SubclassAbility_id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                actual.Should().BeOfType<SubclassAbility>();
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
         [Test]
         public void BaseUserAccess_GetAllAbilitiesOfSubclass_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<SubclassAbility> listofSubclassAbility = CreateTestData.GetListOfSubclassAbility();
+            List<SubclassAbility> expected = new List<SubclassAbility>();
+            SubclassAbility Gunslinger = CreateTestData.GetSubclassAbility();
+            expected.Add(Gunslinger);
+            var gunslinger_id = Gunslinger.Subclass_id;
+            var mockSet = new Mock<DbSet<SubclassAbility>>()
+                .SetupData(listofSubclassAbility, o =>
+                {
+                    return listofSubclassAbility.Single(x => x.Subclass_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.SubclassAbilities).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetAllAbilitiesOfSubclass(gunslinger_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+            }
         }
         [Test]
         public void BaseUserAccess_GetAbilitiesOfSubclassAtOrBelowLevel_ValidCall()
         {
-            throw new NotImplementedException();
+            //Arrange
+            List<SubclassAbility> listofSubclassAbility = CreateTestData.GetListOfSubclassAbility();
+
+            List<SubclassAbility> expected = new List<SubclassAbility>();
+            SubclassAbility Gunslinger = CreateTestData.GetSubclassAbility();
+            SubclassAbility Quickdraw = new SubclassAbility
+            {
+                Subclass_id = Gunslinger.Subclass_id,
+                SubclassAbility_id = Guid.Parse("eb852e1e-39a6-47af-86e2-5dfb3fc8bdee"),
+                Name = "Quickdraw",
+                Description = "You add your proficiency bonus to your initiative. You can also stow a firearm, then draw another firearm as a single object interaction on your turn.",
+                LevelLearned = 7
+            };
+            listofSubclassAbility.Add(Quickdraw);
+            expected.Add(Gunslinger);
+            var gunslinger_id = Gunslinger.Subclass_id;
+            var mockSet = new Mock<DbSet<SubclassAbility>>()
+                .SetupData(listofSubclassAbility, o =>
+                {
+                    return listofSubclassAbility.Single(x => x.Subclass_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.SubclassAbilities).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetAbilitiesOfSubclassAtOrBelowLevel(gunslinger_id, 5);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+                actual.Should().NotContain(Quickdraw);
+            }
         }
 
     }
