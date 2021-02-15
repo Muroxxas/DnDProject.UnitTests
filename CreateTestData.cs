@@ -815,6 +815,84 @@ namespace DnDProject.UnitTests
             knownClasses.Add(Vex_Ranger_BeastMaster);
             return knownClasses;
         }
+
+        public static Subclass GetSubclass()
+        {
+            Subclass Gunslinger = new Subclass
+            {
+                Class_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874"),
+                Subclass_id = Guid.Parse("a8e9e19f-b04f-4d6c-baf8-ada5cd40c30b"),
+                Name = "Gunslinger",
+                Description = "Homebrew"
+            };
+            return Gunslinger;
+        }
+        public static List<Subclass> GetListOfSubclass()
+        {
+            List<Subclass> subclasses = new List<Subclass>();
+
+            var Gunslinger = GetSubclass();
+            subclasses.Add(Gunslinger);
+            var BeastMaster = new Subclass
+            {
+                Class_id = Guid.Parse("969c08ca-f983-4ddd-b351-31962f2429cd"),
+                Subclass_id = Guid.Parse("c7de67ae-3a65-4261-9c09-05a7b0c527bb"),
+                Name = "Beast Master",
+                Description = "BM"
+            };
+            subclasses.Add(BeastMaster);
+            var Transmutation = new Subclass
+            {
+                Class_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b"),
+                Subclass_id = Guid.Parse("c8d2e23a-a193-4e06-8814-9180d4830732"),
+                Name = "School of Transmutation",
+                Description = "This is the law of equivalent exchange"
+            };
+            subclasses.Add(Transmutation);
+            return subclasses;
+        }
+        public static SubclassAbility GetSubclassAbility()
+        {
+            SubclassAbility AdeptMarksman = new SubclassAbility
+            {
+                SubclassAbility_id = Guid.Parse("054cdd07-803d-40b5-9261-cf2392194c09"),
+                Subclass_id = Guid.Parse("a8e9e19f-b04f-4d6c-baf8-ada5cd40c30b"),
+                Name = "Adept Marksman",
+                Description = "You learn to perform powerful trick shots to disable or damage your opponents using your firearms.",
+                LevelLearned = 3
+            };
+            return AdeptMarksman;
+        }
+        public static List<SubclassAbility> GetListOfSubclassAbility()
+        {
+            List<SubclassAbility> subclassAbilities = new List<SubclassAbility>();
+
+            SubclassAbility AdeptMarksman = GetSubclassAbility();
+            subclassAbilities.Add(AdeptMarksman);
+
+            SubclassAbility ExceptionalTraining = new SubclassAbility
+            {
+                SubclassAbility_id = Guid.Parse("0a547cfc-2c7c-450e-92bd-e844bc8abf18"),
+                Subclass_id = Guid.Parse("c7de67ae-3a65-4261-9c09-05a7b0c527bb"),
+                Name = "Exceptional Training",
+                Description = "On any of your turns when your beast companion doesn’t attack, you can use a bonus action to command the beast to take the Dash, Disengage, or Help action on its turn.",
+                LevelLearned = 7
+            };
+            subclassAbilities.Add(ExceptionalTraining);
+
+            SubclassAbility TransmutationSavant = new SubclassAbility
+            {
+                SubclassAbility_id = Guid.Parse("5d8db5fd-5603-46bc-af5a-cef3331d9980"),
+                Subclass_id = Guid.Parse("c8d2e23a-a193-4e06-8814-9180d4830732"),
+                Name = "Transmutation Savant",
+                Description = "The gold and time you must spend to copy a Transmutation spell into your spellbook is halved.",
+                LevelLearned = 2
+            };
+            subclassAbilities.Add(TransmutationSavant);
+
+            return subclassAbilities;
+
+        }
     }
 
 }

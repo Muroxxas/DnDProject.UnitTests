@@ -95,7 +95,7 @@ namespace DnDProject.UnitTests.UserAccess
 
             }
         }
-       
+
         [Test]
         public void BaseUserAccess_DeleteCharacter_ValidCall()
         {
@@ -280,7 +280,7 @@ namespace DnDProject.UnitTests.UserAccess
                 actual.Should().BeEquivalentTo(expected);
             }
         }
- 
+
         [Test]
         public void BaseUserAccess_AddStatsRecord_ValidCall()
         {
@@ -411,7 +411,7 @@ namespace DnDProject.UnitTests.UserAccess
                 actual.Should().BeEquivalentTo(expected);
             }
         }
-        
+
         [Test]
         public void BaseUserAccess_AddNote_ValidCall()
         {
@@ -449,34 +449,34 @@ namespace DnDProject.UnitTests.UserAccess
         [Test]
         public void BaseUserAccess_GetNote_ValidCall()
         {
-        //Arrange
-        List<Note> listOfNotes = CreateTestData.GetListOfNotes();
-        var mockSet = new Mock<DbSet<Note>>()
-            .SetupData(listOfNotes, o =>
+            //Arrange
+            List<Note> listOfNotes = CreateTestData.GetListOfNotes();
+            var mockSet = new Mock<DbSet<Note>>()
+                .SetupData(listOfNotes, o =>
+                {
+                    return listOfNotes.Single(x => x.Note_id.CompareTo(o.First()) == 0);
+                });
+
+            using (var mockContext = AutoMock.GetLoose())
             {
-                return listOfNotes.Single(x => x.Note_id.CompareTo(o.First()) == 0);
-            });
 
-        using (var mockContext = AutoMock.GetLoose())
-        {
-
-            var expected = CreateTestData.GetSampleNote();
-            mockContext.Mock<CharacterContext>()
-               .Setup(x => x.Set<Note>()).Returns(mockSet.Object);
+                var expected = CreateTestData.GetSampleNote();
+                mockContext.Mock<CharacterContext>()
+                   .Setup(x => x.Set<Note>()).Returns(mockSet.Object);
 
                 //Act
-            IUnitOfWork worker = mockContext.Create<UnitOfWork>();
-            IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
-            var actual = toTest.GetNote(expected.Note_id);
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetNote(expected.Note_id);
 
-            //Assert
-            actual.Should().NotBeNull();
-            expected.Should().NotBeNull();
-            actual.Should().BeOfType<Note>();
-            expected.Should().BeOfType<Note>();
-            actual.Should().BeEquivalentTo(expected);
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Note>();
+                expected.Should().BeOfType<Note>();
+                actual.Should().BeEquivalentTo(expected);
+            }
         }
-    }
         [Test]
         public void BaseUserAcess_GetNotesOwnedBy_ValidCall()
         {
@@ -521,7 +521,7 @@ namespace DnDProject.UnitTests.UserAccess
 
             }
         }
-        
+
         [Test]
         public void BaseUserAccess_DeleteNote_ValidCall()
         {
@@ -946,7 +946,7 @@ namespace DnDProject.UnitTests.UserAccess
                 actual.Should().NotContain(WebOfFire);
             }
         }
-    
+
 
         [Test]
         public void BaseUserAccess_GetItem_ValidCall()
@@ -1198,7 +1198,93 @@ namespace DnDProject.UnitTests.UserAccess
             }
         }
 
+        [Test]
+        public void BaseUserAccess_GetAllPlayableClasses_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_CharacterLearnsClass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_CharacterForgetsClass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
 
+        [Test]
+        public void BaseUserAccess_GetClassesOfCharacter_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void Base_UserAccess_GetKnownClassRecordOfCharacterAndClass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_GetPlayableClass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_GetAbilitiesOfClass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_GetAbilitiesOfClassAtOrBelowLevel_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_GetAbility_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_GetAbilityOfSubclass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        [Test]
+        public void BaseUserAccess_GetSubclass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_GetAllSubclassesForClass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_CharacterOfClass_LearnsSubclass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_CharacterOfClassForgetsSubclass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+        [Test]
+        public void BaseUserAccess_GetAllAbilitiesOfSubclass_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+        [Test]
+        public void BaseUserAccess_GetAbilitiesOfSubclassAtOrBelowLevel_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
 
     }
 }

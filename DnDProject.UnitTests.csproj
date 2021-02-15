@@ -142,6 +142,7 @@
     <Compile Include="Unit of Work\UoWFactory.cs" />
     <Compile Include="UserAccess\BaseUserAccessTests.cs" />
     <Compile Include="UserAccess\ItemManagerUserAccessTests.cs" />
+    <Compile Include="UserAccess\PlayableClassManagerUserAccessTests.cs" />
     <Compile Include="UserAccess\SpellManagerUserAccessTests.cs" />
     <Compile Include="UserAccess\UserAccessFactory.cs" />
   </ItemGroup>
