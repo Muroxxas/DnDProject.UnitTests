@@ -24,5 +24,9 @@ namespace DnDProject.UnitTests.UserAccess
         {
             return new ItemsManagerUserAccess(worker);
         }
+        public static IClassManagerUserAccess GetClassManagerUserAccess(IUnitOfWork worker)
+        {
+            return new ClassManagerUserAccess(worker);
+        }
     }
 }

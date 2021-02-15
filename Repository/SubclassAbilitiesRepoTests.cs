@@ -95,7 +95,7 @@ namespace DnDProject.UnitTests.Repository
             }
         }
         [Test]
-        public void SubclassAbilitiesRepo_GetAllAbilitiesOfSubclass_ValidCall()
+        public void SubclassAbilitiesRepo_GetAbilitiesOfSubclass_ValidCall()
         {
             //Arrange
             List<SubclassAbility> listofSubclassAbility = CreateTestData.GetListOfSubclassAbility();
@@ -162,7 +162,7 @@ namespace DnDProject.UnitTests.Repository
             }
         }
         [Test]
-        public void SubclassAbilitiesRepo_RemoveSubclassAbilities_ValidCall()
+        public void SubclassAbilitiesRepo_RemoveSubclassAbility_ValidCall()
         {
             //Arrange
             List<SubclassAbility> listofSubclassAbility = CreateTestData.GetListOfSubclassAbility();
