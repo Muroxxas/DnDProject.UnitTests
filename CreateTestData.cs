@@ -2,6 +2,7 @@
 using DnDProject.Entities.Character.ViewModels;
 using DnDProject.Entities.Class.DataModels;
 using DnDProject.Entities.Items.DataModels;
+using DnDProject.Entities.Races.DataModels;
 using DnDProject.Entities.Spells.DataModels;
 using System;
 using System.Collections.Generic;
@@ -892,6 +893,74 @@ namespace DnDProject.UnitTests
 
             return subclassAbilities;
 
+        }
+
+        public static Race GetSampleRace()
+        {
+            Race HalfElf = new Race
+            {
+                Race_id = Guid.Parse("e482542d-f06a-4708-b436-d3771c7a8e40"),
+                Name = "Half-elf",
+                Description = "Half human, half elf"
+            };
+            return HalfElf;
+        }
+        public static List<Race> GetListOfRace()
+        {
+            List<Race> races = new List<Race>();
+            Race HalfElf = GetSampleRace();
+            races.Add(HalfElf);
+
+            Race Human = new Race
+            {
+                Race_id = Guid.Parse("14f91515-0107-4c79-a3da-be3cf48d7a26"),
+                Name = "Human",
+                Description = "Hooman"
+            };
+            races.Add(Human);
+            Race Goliath = new Race
+            {
+                Race_id = Guid.Parse("86a5c77c-b740-4bdb-bbe4-c1d19198a4dd"),
+                Name = "Goliath",
+                Description = "Big and Stronk"
+            };
+            races.Add(Goliath);
+            return races;
+        }
+
+        public static RaceAbility GetSampleRaceAbility()
+        {
+            RaceAbility DarkVision = new RaceAbility
+            {
+                RaceAbility_id = Guid.Parse("14fda1c5-ff50-4a28-bde0-76a907dda2bc"),
+                Race_id = Guid.Parse("e482542d-f06a-4708-b436-d3771c7a8e40"),
+                Name = "DarkVision",
+                Description = "You have 60 feet of dark vision."
+            };
+            return DarkVision;
+        }
+        public static List<RaceAbility> GetListOfRaceAbility()
+        {
+            List<RaceAbility> raceAbilities = new List<RaceAbility>();
+            raceAbilities.Add(GetSampleRaceAbility());
+            RaceAbility DraconicAncestry = new RaceAbility
+            {
+                RaceAbility_id = Guid.Parse("7c8cd172-b0a2-441f-bf50-00e508c4f01f"),
+                Race_id = Guid.Parse("e20f4d29-e2c6-4b7d-8fbf-8f1fa4dc5e78"),
+                Name = "Draconic Ancestry",
+                Description = "Breathe and do damage based upon your species of dragon"
+            };
+            raceAbilities.Add(DraconicAncestry);
+            RaceAbility MountainBorn = new RaceAbility
+            {
+                RaceAbility_id = Guid.Parse("61efef74-a2f7-4b8f-9b81-56c16dcff4ce"),
+                Race_id = Guid.Parse("86a5c77c-b740-4bdb-bbe4-c1d19198a4dd"),
+                Name = "Mountain Born",
+                Description = "You have natural resistance to Cold Damage."
+            };
+            raceAbilities.Add(MountainBorn);
+
+            return raceAbilities;
         }
     }
 

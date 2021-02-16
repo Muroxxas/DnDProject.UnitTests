@@ -9,6 +9,7 @@ using DnDProject.Backend.UserAccess.Interfaces;
 using DnDProject.Entities.Character.DataModels;
 using DnDProject.Entities.Class.DataModels;
 using DnDProject.Entities.Items.DataModels;
+using DnDProject.Entities.Races.DataModels;
 using DnDProject.Entities.Spells.DataModels;
 using FluentAssertions;
 using Moq;
@@ -1805,5 +1806,95 @@ namespace DnDProject.UnitTests.UserAccess
             }
         }
 
+        [Test]
+        public void BaseUserAccess_GetRace_ValidCall()
+        {
+            //Arrange
+            List<Race> races = CreateTestData.GetListOfRace();
+            var mockSet = new Mock<DbSet<Race>>()
+                .SetupData(races, o =>
+                {
+                    return races.Single(x => x.Race_id.CompareTo(o.First()) == 0);
+                });
+            var expected = CreateTestData.GetSampleRace();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<RaceContext>()
+                    .Setup(x => x.Set<Race>()).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetRace(expected.Race_id);
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<Race>();
+                expected.Should().BeOfType<Race>();
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_GetAllRaces_ValidCall()
+        {
+            //Arrange
+            List<Race> races = CreateTestData.GetListOfRace();
+            var mockSet = new Mock<DbSet<Race>>()
+                .SetupData(races, o =>
+                {
+                    return races.Single(x => x.Race_id.CompareTo(o.First()) == 0);
+                });
+            var expected = CreateTestData.GetListOfRace();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<RaceContext>()
+                    .Setup(x => x.Set<Race>()).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetAllRaces().ToList();
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<List<Race>>();
+                expected.Should().BeOfType<List<Race>>();
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+        [Test]
+        public void BaseUserAccess_GetAbilitiesOfRace_ValidCall()
+        {
+            //Arrange
+            List<RaceAbility> raceAbilities = CreateTestData.GetListOfRaceAbility();
+            var mockSet = new Mock<DbSet<RaceAbility>>()
+                .SetupData(raceAbilities, o =>
+                {
+                    return raceAbilities.Single(x => x.RaceAbility_id.CompareTo(o.First()) == 0);
+                });
+            var expected = CreateTestData.GetSampleRaceAbility();
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<RaceContext>()
+                   .Setup(x => x.RaceAbilities).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetAbilitiesOfRace(expected.Race_id).ToList();
+
+                //Assert
+                actual.Should().NotBeNull();
+                expected.Should().NotBeNull();
+                actual.Should().BeOfType<List<RaceAbility>>();
+                expected.Should().BeOfType<RaceAbility>();
+                actual.Should().ContainEquivalentOf(expected);
+            }
+        }
     }
 }

@@ -135,6 +135,7 @@
     <Compile Include="Repository\ItemsRepositoryTests.cs" />
     <Compile Include="Repository\NotesRepositoryTests.cs" />
     <Compile Include="Repository\PlayableClassesRepositoryTest.cs" />
+    <Compile Include="Repository\RaceRepositoryTests.cs" />
     <Compile Include="Repository\SpellsRepositoryTests.cs" />
     <Compile Include="Repository\StatsRepositoryTests.cs" />
     <Compile Include="Repository\SubclassAbilitiesRepoTests.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="UserAccess\BaseUserAccessTests.cs" />
     <Compile Include="UserAccess\ItemManagerUserAccessTests.cs" />
     <Compile Include="UserAccess\PlayableClassManagerUserAccessTests.cs" />
+    <Compile Include="UserAccess\RaceManagerUserAccess.cs" />
     <Compile Include="UserAccess\SpellManagerUserAccessTests.cs" />
     <Compile Include="UserAccess\UserAccessFactory.cs" />
   </ItemGroup>
