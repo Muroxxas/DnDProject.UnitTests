@@ -1,6 +1,9 @@
-﻿using DnDProject.Backend.Mapping.Interfaces;
+﻿using DnDProject.Backend.Mapping.Implementations;
+using DnDProject.Backend.Mapping.Interfaces;
 using DnDProject.Entities.Character.DataModels;
 using DnDProject.Entities.Character.ViewModels;
+using DnDProject.Entities.Character.ViewModels.PartialViewModels.Components;
+using DnDProject.Entities.Races.ViewModels.PartialViewModels.ComponentModels;
 using FluentAssertions;
 using NUnit.Framework;
 using System;
@@ -14,6 +17,32 @@ namespace DnDProject.UnitTests.Mapping
     [TestFixture]
     public class CharacterMappingTests
     {
+        //Create/Update
+        [Test]
+        public void CharacterMapper_MapNoteCMToNote_ValidCall()
+        {
+            //Arrance
+            NoteCM updated = new NoteCM
+            {
+                Note_id = Guid.Parse("f0a03fe1-4d70-4e4f-8b91-5f34494bdccb"),
+                Name = "Background",
+                Contents = "Test"
+            };
+            var overwritten = new Note { 
+                Note_id = Guid.Parse("e29ca3aa-867e-467a-a4fe-8235e621548e")
+            };
+
+            //Act
+            CharacterMapper.mapNoteCMOverNote(updated, overwritten);
+
+            //Assert
+            //I want to map all properties except for the Note id - I don't want that accidentally being changed
+            overwritten.Should().BeEquivalentTo(updated,
+                options => options.Excluding(o => o.Note_id));
+            overwritten.Note_id.Should().NotBe(updated.Note_id);
+        }
+
+        //Read
 
         [Test]
         public void CharacterMapper_MapCharacterToCharacterVM_ItemsAreEquivalent()
@@ -21,10 +50,9 @@ namespace DnDProject.UnitTests.Mapping
             //Arrange
             var expected = CreateTestData.getSampleCharacterVM();
             var m = CreateTestData.getSampleCharacter();
-            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
 
             //Act
-            var actual = toTest.mapCharacterToCharacterVM(m);
+            var actual = CharacterMapper.mapCharacterToCharacterVM(m);
 
             //Assert
             expected.Should().BeOfType<CharacterVM>();
@@ -33,147 +61,52 @@ namespace DnDProject.UnitTests.Mapping
             expected.Should().NotBeNull();
             actual.Should().BeEquivalentTo(expected);
 
-        }
-
+        }      
         [Test]
-        public void CharacterMapper_MapCharacterVMToNewEntity_ItemsAreEquivalent() 
+        public void CharacterMapper_MapRaceToRaceListModel_ValidCall()
         {
             //Arrance
-            var expected = CreateTestData.getSampleCharacterVM();
-            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
+            var expected = CreateTestData.GetSampleRace();
+            var actual = new RaceListModel();
 
+            //Act            
+            actual = CharacterMapper.mapRaceToRaceListModel(expected);
 
-            //Act
-            var actual = toTest.mapCharacterVMToNewEntity(expected);
-
-            //Assert
-            actual.Should().BeOfType<Character>();
-            expected.Should().BeOfType<CharacterVM>();
-            actual.Should().NotBeNull();
-            expected.Should().NotBeNull();
-            actual.Should().BeEquivalentTo<CharacterVM>(expected);
-        }
-
-        [Test]
-        public void CharacterMapper_MapCharacterVMToExistingEntity_ItemsAreEquivalent()
-        {
             //Arrange
-            var vm = CreateTestData.getSampleCharacterVM();
-            var expected = CreateTestData.getSampleCharacter();
-            var actual = new Character();
-            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
-
-            //Act
-            toTest.mapCharacterVMToExistingEntity(vm, actual);
-
-            //Assert
-            actual.Should().BeOfType<Character>();
-            expected.Should().BeOfType<Character>();
-            actual.Should().NotBeNull();
             expected.Should().NotBeNull();
-            actual.Should().BeEquivalentTo(vm);            
-
-            //VM doesn't have the user id, and we don't want it to, so it is excluded
-            actual.Should().BeEquivalentTo(expected, options => options.Excluding(item => item.User_id));
-            
-
-        }
-
-        [Test]
-        public void CharacterMapper_MapUpdatedCharacterOverEntity_ItemsAreEquivalent()
-        {
-            //Arrange
-            var expected = CreateTestData.getSampleCharacter();
-            var actual = new Character();
-            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
-
-            //Act
-            toTest.mapUpdatedCharacterOverEntity(expected, actual);
-
-
-            //Assert
-            actual.Should().BeOfType<Character>();
-            expected.Should().BeOfType<Character>();
             actual.Should().NotBeNull();
-            expected.Should().NotBeNull();
-            actual.Should().BeEquivalentTo(expected);
+            actual.Race_id.Should().Be(expected.Race_id);
+            actual.Name.Should().Be(expected.Name);
 
 
         }
-
         [Test]
-        public void CharacterMapper_MapUpdatedProficiencyRecordOverEntity_ItemsAreEquivalent()
+        public void CharacterMapper_MapIsProficientToIsProficientCM_ValidCall()
         {
-
             //Arrange
-            var expected = CreateTestData.GetSampleIsProficient();
-            var actual = new IsProficient();
+            var record = CreateTestData.GetSampleIsProficient();
+            var actual = new IsProficientCM();
 
             //Act
-            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
-            toTest.mapUpdatedProficiencyRecordOverEntity(expected, actual);
+            actual = CharacterMapper.mapIsProficientToIsProficientCM(record);
 
             //Assert
-            actual.Should().BeOfType<IsProficient>();
-            actual.Should().NotBeNull();
-            expected.Should().BeOfType<IsProficient>();
-            expected.Should().NotBeNull();
-            actual.Should().BeEquivalentTo(expected);
-
-
-        }
-
-        [Test]
-        public void CharacterMapper_MapUpdatedHealthRecordOverEntity_ItemsAreEquivalent()
-        {
-            //Arrange
-            var expected = CreateTestData.GetSampleHealth();
-            var actual = new Health();
-
-            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
-            toTest.mapUpdatedHealthRecordOverEntity(expected, actual);
-
-            //Assert
-            actual.Should().BeOfType<Health>();
-            actual.Should().NotBeNull();
-            expected.Should().BeOfType<Health>();
-            expected.Should().NotBeNull();
-            actual.Should().BeEquivalentTo(expected);
-        }
-        [Test]
-        public void CharacterMapper_MapUpdatedStatsRecordOverEntity_ItemsAreEquivalent()
-        {
-            //Arrange
-            var expected = CreateTestData.GetSampleStats();
-            var actual =new Stats();
-            //Act
-            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
-            toTest.mapUpdatedStatsRecordOverEntity(expected, actual);
-
-            //Assert
-            actual.Should().BeOfType<Stats>();
-            actual.Should().NotBeNull();
-            expected.Should().BeOfType<Stats>();
-            expected.Should().NotBeNull();
-            actual.Should().BeEquivalentTo(expected);
+            actual.Should().BeEquivalentTo(record,
+                options => options.Excluding(o => o.Character_id));
 
         }
         [Test]
-        public void CharacterMapper_MapUpdatedCurrencyRecordOverEntity_ItemsAreEquivalent()
+        public void CharacterMapper_MapNoteToNoteCM_ValidCall()
         {
             //Arrange
-            var expected = CreateTestData.GetSampleCurrency();
-            var actual = new Currency();
-            //Act
-            ICharacterMapper toTest = mappingTestFactory.getCharacterMapper();
-            toTest.mapUpdatedCurrencyRecordOverEntity(expected, actual);
+            var record = CreateTestData.GetSampleNote();
+            var actual = new NoteCM();
 
-            //Assert
-            actual.Should().BeOfType<Currency>();
-            actual.Should().NotBeNull();
-            expected.Should().BeOfType<Currency>();
-            expected.Should().NotBeNull();
-            actual.Should().BeEquivalentTo(expected);
+            //Act
+            actual = CharacterMapper.mapNoteToNoteCM(record);
+
+            actual.Should().BeEquivalentTo(record,
+                options => options.Excluding(o => o.Character_id));
         }
     }
 }

@@ -125,7 +125,6 @@
   <ItemGroup>
     <Compile Include="CreateTestData.cs" />
     <Compile Include="Mapping\CharacterMappingTests.cs" />
-    <Compile Include="Mapping\mappingTestFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\CharacterRepositoryTests.cs" />
     <Compile Include="Repository\ClassAbilitiesRepoTests.cs" />
@@ -140,6 +139,7 @@
     <Compile Include="Repository\StatsRepositoryTests.cs" />
     <Compile Include="Repository\SubclassAbilitiesRepoTests.cs" />
     <Compile Include="Repository\SubclassesRepoTests.cs" />
+    <Compile Include="Services\Character\CreateCharacterTests.cs" />
     <Compile Include="UserAccess\BaseUserAccessTests.cs" />
     <Compile Include="UserAccess\ItemManagerUserAccessTests.cs" />
     <Compile Include="UserAccess\PlayableClassManagerUserAccessTests.cs" />
@@ -161,9 +161,7 @@
       <Name>DnDProject.Entities</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Services\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
