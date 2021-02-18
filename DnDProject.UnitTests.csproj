@@ -139,7 +139,10 @@
     <Compile Include="Repository\StatsRepositoryTests.cs" />
     <Compile Include="Repository\SubclassAbilitiesRepoTests.cs" />
     <Compile Include="Repository\SubclassesRepoTests.cs" />
-    <Compile Include="Services\Character\CreateCharacterTests.cs" />
+    <Compile Include="Services\Character\_CreateCharacter\GETTests.cs" />
+    <Compile Include="Services\Character\_CreateCharacter\INVALIDTests.cs" />
+    <Compile Include="Services\Character\_CreateCharacter\mockMaker.cs" />
+    <Compile Include="Services\Character\_CreateCharacter\POSTTests.cs" />
     <Compile Include="UserAccess\BaseUserAccessTests.cs" />
     <Compile Include="UserAccess\ItemManagerUserAccessTests.cs" />
     <Compile Include="UserAccess\PlayableClassManagerUserAccessTests.cs" />
