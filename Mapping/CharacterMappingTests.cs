@@ -17,7 +17,60 @@ namespace DnDProject.UnitTests.Mapping
     [TestFixture]
     public class CharacterMappingTests
     {
-        //Create/Update
+        //Create
+        [Test]
+        public void CharacterMapper_MapCharacterVmToCharacter()
+        {
+            CharacterVM vm = new CharacterVM();
+            vm.Name = "Bradley Norwood";
+
+            CharacterDM actual = CharacterMapper.mapCharacterVMToNewEntity(vm);
+
+            actual.Name.Should().Be(vm.Name);
+        }
+        [Test]
+        public void CharacterMapper_MapCombatCMToHealthRecord()
+        {
+            CombatCM cm = new CombatCM();
+            cm.MaxHP = 50;
+
+            Health actual = CharacterMapper.mapCombatCMToNewHealthEntity(cm);
+
+            actual.MaxHP.Should().Be(cm.MaxHP);
+        }
+        [Test]
+        public void CharacterMapper_MapStatsCMToNewEntity()
+        {
+            StatsCM cm = new StatsCM();
+            cm.Strength = 14;
+
+            Stats actual = CharacterMapper.mapStatsCMToNewEntity(cm);
+
+            actual.Strength.Should().Be(cm.Strength);
+        }
+
+        [Test]
+        public void CharacterMapper_MapMoneyCMToNewEntity()
+        {
+            MoneyCM cm = new MoneyCM();
+            cm.GoldPieces = 50;
+
+            Currency actual = CharacterMapper.mapCurrencyCMToNewEntity(cm);
+
+            actual.GoldPieces.Should().Be(cm.GoldPieces);
+        }
+        [Test]
+        public void CharacterMapper_MapNoteCMToNewEntity()
+        {
+            NoteCM cm = new NoteCM();
+            cm.Name = "Backstory";
+
+            Note actual = CharacterMapper.mapNoteCMToNewEntity(cm);
+
+            actual.Name.Should().Be(cm.Name);
+        }
+
+        //update
         [Test]
         public void CharacterMapper_MapNoteCMToNote_ValidCall()
         {
@@ -44,24 +97,7 @@ namespace DnDProject.UnitTests.Mapping
 
         //Read
 
-        [Test]
-        public void CharacterMapper_MapCharacterToCharacterVM_ItemsAreEquivalent()
-        {
-            //Arrange
-            var expected = CreateTestData.getSampleCharacterVM();
-            var m = CreateTestData.getSampleCharacter();
-
-            //Act
-            var actual = CharacterMapper.mapCharacterToCharacterVM(m);
-
-            //Assert
-            expected.Should().BeOfType<CharacterVM>();
-            actual.Should().BeOfType<CharacterVM>();
-            actual.Should().NotBeNull();
-            expected.Should().NotBeNull();
-            actual.Should().BeEquivalentTo(expected);
-
-        }      
+     
         [Test]
         public void CharacterMapper_MapRaceToRaceListModel_ValidCall()
         {

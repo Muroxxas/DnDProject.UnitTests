@@ -30,10 +30,10 @@ namespace DnDProject.UnitTests.UserAccess
         public void BaseUserAccess_AddCharacter_ValidCall()
         {
             //Arrange
-            List<Character> charList = new List<Character>();
+            List<CharacterDM> charList = new List<CharacterDM>();
             charList.Add(CreateTestData.getSampleCharacter());
 
-            var mockSet = new Mock<DbSet<Character>>()
+            var mockSet = new Mock<DbSet<CharacterDM>>()
                 .SetupData(charList, o =>
                 {
                     return charList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
@@ -41,7 +41,7 @@ namespace DnDProject.UnitTests.UserAccess
 
             using (var mockContext = AutoMock.GetLoose())
             {
-                mockContext.Mock<CharacterContext>().Setup(x => x.Set<Character>()).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>().Setup(x => x.Set<CharacterDM>()).Returns(mockSet.Object);
                 IUnitOfWork worker = mockContext.Create<UnitOfWork>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
 
@@ -53,9 +53,9 @@ namespace DnDProject.UnitTests.UserAccess
                 toTest.AddCharacter(expected);
                 var actual = toTest.GetCharacter(id);
 
-                expected.Should().BeOfType<Character>();
+                expected.Should().BeOfType<CharacterDM>();
                 expected.Should().NotBeNull();
-                actual.Should().BeOfType<Character>();
+                actual.Should().BeOfType<CharacterDM>();
                 actual.Should().NotBeNull();
 
                 actual.Should().BeEquivalentTo(expected);
@@ -67,10 +67,10 @@ namespace DnDProject.UnitTests.UserAccess
         public void BaseUserAccess_GetCharacter_ValidCall()
         {
             //Arrange
-            List<Character> charList = new List<Character>();
+            List<CharacterDM> charList = new List<CharacterDM>();
             charList.Add(CreateTestData.getSampleCharacter());
 
-            var mockSet = new Mock<DbSet<Character>>()
+            var mockSet = new Mock<DbSet<CharacterDM>>()
                 .SetupData(charList, o =>
                 {
                     return charList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
@@ -78,7 +78,7 @@ namespace DnDProject.UnitTests.UserAccess
 
             using (var mockContext = AutoMock.GetLoose())
             {
-                mockContext.Mock<CharacterContext>().Setup(x => x.Set<Character>()).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>().Setup(x => x.Set<CharacterDM>()).Returns(mockSet.Object);
                 IUnitOfWork worker = mockContext.Create<UnitOfWork>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
 
@@ -87,9 +87,9 @@ namespace DnDProject.UnitTests.UserAccess
                 Guid id = expected.Character_id;
                 var actual = toTest.GetCharacter(id);
 
-                expected.Should().BeOfType<Character>();
+                expected.Should().BeOfType<CharacterDM>();
                 expected.Should().NotBeNull();
-                actual.Should().BeOfType<Character>();
+                actual.Should().BeOfType<CharacterDM>();
                 actual.Should().NotBeNull();
 
                 actual.Should().BeEquivalentTo(expected);
@@ -101,8 +101,8 @@ namespace DnDProject.UnitTests.UserAccess
         public void BaseUserAccess_DeleteCharacter_ValidCall()
         {
             //Arrange
-            List<Character> charList = CreateTestData.GetListOfCharacters();
-            var mockSet = new Mock<DbSet<Character>>()
+            List<CharacterDM> charList = CreateTestData.GetListOfCharacters();
+            var mockSet = new Mock<DbSet<CharacterDM>>()
                 .SetupData(charList, o =>
                 {
                     return charList.Single(x => x.Character_id.CompareTo(o.First()) == 0);
@@ -110,15 +110,15 @@ namespace DnDProject.UnitTests.UserAccess
             using (var mockContext = AutoMock.GetLoose())
             {
                 mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.Set<Character>()).Returns(mockSet.Object);
+                    .Setup(x => x.Set<CharacterDM>()).Returns(mockSet.Object);
                 mockContext.Mock<CharacterContext>()
-                    .Setup(x => x.Set<Character>().Remove(It.IsAny<Character>()))
-                        .Callback<Character>((entity) => charList.Remove(entity));
+                    .Setup(x => x.Set<CharacterDM>().Remove(It.IsAny<CharacterDM>()))
+                        .Callback<CharacterDM>((entity) => charList.Remove(entity));
 
 
 
                 var toDelete = CreateTestData.getSampleCharacter();
-                Character expected = null;
+                CharacterDM expected = null;
                 var NotExpected = CreateTestData.getSampleCharacter();
 
                 var id = CreateTestData.getSampleCharacter().Character_id;
@@ -836,6 +836,66 @@ namespace DnDProject.UnitTests.UserAccess
                 expected.Should().NotBeNull();
                 actual.Should().BeOfType<Material>();
                 expected.Should().BeOfType<Material>();
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_GetIdsOfClassesThatCanCastSpell_ValidCall()
+        {
+            //Arrange
+            List<Spell_Class> castableByList = CreateTestData.GetListOfCastableByRecords();
+            var mockSet = new Mock<DbSet<Spell_Class>>()
+                .SetupData(castableByList, o =>
+                {
+                    return castableByList.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
+                });
+            var expected = new Spell_Class
+            {
+                Spell_id = Guid.Parse("46d10bb8-84d2-408d-a928-5847ff99461f"),
+                Class_id = Guid.Parse("b74e228f-015d-45b4-af0f-a6781976535a")
+            };
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.CastableByRecords).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetIdsOfClassesThatCanCastSpell(expected.Spell_id);
+
+                //Assert
+                actual.Should().Contain(expected.Class_id);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_GetKnownSpellRecord_ValidCall()
+        {
+            //Arrange
+            //Create list of Character_Spell
+            List<Spell_Character> knownSpells = CreateTestData.GetListOfKnownSpells();
+            var mockSet = new Mock<DbSet<Spell_Character>>()
+                .SetupData(knownSpells, o =>
+                {
+                    return knownSpells.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            //We want to find the record that indicates Caleb can create his tower.
+            var expected = CreateTestData.GetSampleKnownSpell();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.KnownSpells).Returns(mockSet.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Set<Spell_Character>()).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetKnownSpellRecord(expected.Character_id, expected.Spell_id);
+
+                //Arrange
                 actual.Should().BeEquivalentTo(expected);
             }
         }

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DnDProject.UnitTests.Services.Character._CreateCharacter
+namespace DnDProject.UnitTests.Processors.Character._CreateCharacter
 {
     [TestFixture]
     public class INVALIDTests

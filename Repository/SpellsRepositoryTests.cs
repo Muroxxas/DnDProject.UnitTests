@@ -84,6 +84,36 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
+        public void SpellsRepository_GetKnownSpellRecord_ValidCall()
+        {
+            //Arrange
+            //Create list of Character_Spell
+            List<Spell_Character> knownSpells = CreateTestData.GetListOfKnownSpells();
+            var mockSet = new Mock<DbSet<Spell_Character>>()
+                .SetupData(knownSpells, o =>
+                {
+                    return knownSpells.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            //We want to find the record that indicates Caleb can create his tower.
+            var expected = CreateTestData.GetSampleKnownSpell();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.KnownSpells).Returns(mockSet.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Set<Spell_Character>()).Returns(mockSet.Object);
+
+                //Act
+                ISpellsRepository toTest = mockContext.Create<SpellsRepository>();
+                var actual = toTest.GetKnownSpellRecord(expected.Character_id, expected.Spell_id);
+
+                //Arrange
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+        [Test]
         public void SpellsRepository_GetSpellsKnownBy_ValidCall()
         {
             //Arrange
@@ -300,6 +330,35 @@ namespace DnDProject.UnitTests.Repository
                 actual.Should().NotBeNull();
                 actual.Should().BeOfType<List<Spell>>();
                 actual.Should().BeEquivalentTo(expected);
+            }
+        }
+
+        [Test]
+        public void SpellsRepository_GetIdsOfClassesThatCanCastSpell_ValidCall()
+        {
+            //Arrange
+            List<Spell_Class> castableByList = CreateTestData.GetListOfCastableByRecords();
+            var mockSet = new Mock<DbSet<Spell_Class>>()
+                .SetupData(castableByList, o =>
+                {
+                    return castableByList.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
+                });
+            var expected = new Spell_Class
+            {
+                Spell_id = Guid.Parse("46d10bb8-84d2-408d-a928-5847ff99461f"),
+                Class_id = Guid.Parse("b74e228f-015d-45b4-af0f-a6781976535a")
+            };
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.CastableByRecords).Returns(mockSet.Object);
+
+                //Act
+                ISpellsRepository toTest = mockContext.Create<SpellsRepository>();
+                var actual = toTest.GetIdsOfClassesThatCanCastSpell(expected.Spell_id);
+
+                //Assert
+                actual.Should().Contain(expected.Class_id);
             }
         }
 

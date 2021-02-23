@@ -14,9 +14,9 @@ namespace DnDProject.UnitTests
 {
     public static class CreateTestData
     {
-        public static Character getSampleCharacter()
+        public static CharacterDM getSampleCharacter()
         {
-            Character character = new Character
+            CharacterDM Vax = new CharacterDM
             {
                 Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
                 User_id = Guid.Parse("4878cf31-c247-4d8f-b55c-b7ebdcd673be"),
@@ -25,36 +25,21 @@ namespace DnDProject.UnitTests
                 Alignment = "Chaotic Good",
                 Exp = 0,
                 Background = "Criminal",
+                ArmorClass = 17,
+                MovementSpeed = 60,                
                 Inspiration = false
             };
 
-            return character;
+            return Vax;
         }
-
-        public static CharacterVM getSampleCharacterVM() 
+        public static List<CharacterDM> GetListOfCharacters()
         {
-            CharacterVM character = new CharacterVM
-            {
-                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
-                Name = "Vax'ildan",
-                Race_id = Guid.Parse("0c56bb15-ea0b-46a6-9454-1533045574b6"),
-                Alignment = "Chaotic Good",
-                Exp = 0,
-                Background = "Criminal",
-                Inspiration = false
-            };
+            List<CharacterDM> listOfCharacters = new List<CharacterDM>();
 
-            return character;
-        }
-
-        public static List<Character> GetListOfCharacters()
-        {
-            List<Character> listOfCharacters = new List<Character>();
-
-            Character Vax = getSampleCharacter();
+            CharacterDM Vax = getSampleCharacter();
             listOfCharacters.Add(Vax);
 
-            Character Percy = new Character
+            CharacterDM Percy = new CharacterDM
             {
                 Character_id = Guid.Parse("55555555-4444-3333-2222-111111111111"),
                 User_id = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
@@ -63,11 +48,13 @@ namespace DnDProject.UnitTests
                 Alignment = "Chaotic Good",
                 Exp = 0,
                 Background = "Noble",
+                ArmorClass = 15,
+                MovementSpeed = 30,
                 Inspiration = false
             };
             listOfCharacters.Add(Percy);
 
-            Character Gilmore = new Character
+            CharacterDM Gilmore = new CharacterDM
             {
                 Character_id = Guid.Parse("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
                 User_id = Guid.Parse("00000000-9999-8888-7777-666666666666"),
@@ -76,6 +63,8 @@ namespace DnDProject.UnitTests
                 Alignment = "Chaotic Good",
                 Exp = 0,
                 Background = "Merchant",
+                ArmorClass = 12,
+                MovementSpeed = 30,
                 Inspiration = false
             };
             listOfCharacters.Add(Gilmore);
@@ -426,12 +415,12 @@ namespace DnDProject.UnitTests
         }
         public static Spell_Character GetSampleKnownSpell()
         {
-            Spell_Character knownSpellRecord = new Spell_Character()
+            Spell_Character Caleb_tower = new Spell_Character()
             {
                 Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
                 Spell_id = Guid.Parse("46d10bb8-84d2-408d-a928-5847ff99461f")
             };
-            return knownSpellRecord;
+            return Caleb_tower;
         }
         public static List<Spell_Character> GetListOfKnownSpells()
         {

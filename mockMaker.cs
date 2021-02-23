@@ -16,7 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DnDProject.UnitTests.Services.Character._CreateCharacter
+namespace DnDProject.UnitTests
 {
     public static class mockMaker
     {
@@ -59,13 +59,6 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
 
         }
 
-        public static ICreateCharacter getCharacterCreator(AutoMock mockContext)
-        {
-            IUnitOfWork uow = mockContext.Create<UnitOfWork>();
-            IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
-            ICreateCharacter toTest = new CreateCharacter(access);
-            return toTest;
 
-        }
     }
 }

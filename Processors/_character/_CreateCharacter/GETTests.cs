@@ -1,16 +1,10 @@
 ﻿using Autofac.Extras.Moq;
-using DnDProject.Backend.Contexts;
-using DnDProject.Backend.Mapping.Interfaces;
-using DnDProject.Backend.Services.Implementations;
-using DnDProject.Backend.Services.Interfaces;
-using DnDProject.Backend.Unit_Of_Work.Implementations;
+using DnDProject.Backend.Processors.Interfaces;
 using DnDProject.Backend.Unit_Of_Work.Interfaces;
-using DnDProject.Backend.UserAccess.Implementations;
 using DnDProject.Backend.UserAccess.Interfaces;
-using DnDProject.Entities.Character.DataModels;
-using DnDProject.Entities.Character.ViewModels;
 using DnDProject.Entities.Races.DataModels;
-using DnDProject.UnitTests.Mapping;
+using DnDProject.UnitTests.Processors;
+using DnDProject.UnitTests.Unit_Of_Work;
 using DnDProject.UnitTests.UserAccess;
 using FluentAssertions;
 using Moq;
@@ -22,7 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DnDProject.UnitTests.Services.Character._CreateCharacter
+namespace DnDProject.UnitTests.processors._character._CreateCharacter
 {
     [TestFixture]
     public class GETTests
@@ -35,7 +29,7 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
             using (var mockContext = mockMaker.getMockContext())
             {
                 //Act
-                ICreateCharacter toTest = mockMaker.getCharacterCreator(mockContext);
+                ICreateCharacter toTest = buildProcessor(mockContext);
                 var primaryTab = toTest.CreateCharacterGET().PrimaryTab;
                 var actual = primaryTab.IsProficient;
 
@@ -50,7 +44,7 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
             
             using (var mockContext = mockMaker.getMockContext())
             {
-                ICreateCharacter toTest = mockMaker.getCharacterCreator(mockContext);
+                ICreateCharacter toTest = buildProcessor(mockContext);
                 var primaryTab = toTest.CreateCharacterGET().PrimaryTab;
                 var actual = primaryTab.Stats;
 
@@ -64,7 +58,7 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
         {
             using (var mockContext = mockMaker.getMockContext())
             {
-                ICreateCharacter toTest = mockMaker.getCharacterCreator(mockContext);
+                ICreateCharacter toTest = buildProcessor(mockContext);
                 var primaryTab = toTest.CreateCharacterGET().PrimaryTab;
                 var actual = primaryTab.Combat;
 
@@ -77,7 +71,7 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
         {
             using (var mockContext = mockMaker.getMockContext())
             {
-                ICreateCharacter toTest = mockMaker.getCharacterCreator(mockContext);
+                ICreateCharacter toTest = buildProcessor(mockContext);
                 var notesTab = toTest.CreateCharacterGET().NotesTab;
 
                 notesTab.Should().NotBeNull();
@@ -89,10 +83,21 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
         {
             using (var mockContext = mockMaker.getMockContext())
             {
-                ICreateCharacter toTest = mockMaker.getCharacterCreator(mockContext);
+                ICreateCharacter toTest = buildProcessor(mockContext);
                 var inventoryTab = toTest.CreateCharacterGET().InventoryTab;
 
                 inventoryTab.Should().NotBeNull();
+            }
+        }
+        [Test]
+        public void CreateCharacterGET_SpellsTabNotNull()
+        {
+            using (var mockContext = mockMaker.getMockContext())
+            {
+                ICreateCharacter toTest = buildProcessor(mockContext);
+                var spellsTab = toTest.CreateCharacterGET().SpellsTab;
+
+                spellsTab.Should().NotBeNull();
             }
         }
         [Test]
@@ -100,7 +105,7 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
         {
             using (var mockContext = mockMaker.getMockContext())
             {
-                ICreateCharacter toTest = mockMaker.getCharacterCreator(mockContext);
+                ICreateCharacter toTest = buildProcessor(mockContext);
                 var inventoryTab = toTest.CreateCharacterGET().InventoryTab;
 
                 inventoryTab.Money.Should().NotBeNull();
@@ -112,7 +117,7 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
         {
             using (var mockContext = mockMaker.getMockContext())
             {
-                ICreateCharacter toTest = mockMaker.getCharacterCreator(mockContext);
+                ICreateCharacter toTest = buildProcessor(mockContext);
                 var notesTab = toTest.CreateCharacterGET().NotesTab;
 
                 notesTab.Notes.Length.Should().Be(0);
@@ -124,7 +129,7 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
         {
             using (var mockContext = mockMaker.getMockContext())
             {
-                ICreateCharacter toTest = mockMaker.getCharacterCreator(mockContext);
+                ICreateCharacter toTest = buildProcessor(mockContext);
                 var inventoryTab = toTest.CreateCharacterGET().InventoryTab;
 
                 inventoryTab.Items.Length.Should().Be(0);
@@ -139,7 +144,7 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
             using (var mockContext = mockMaker.getMockContext())
             {
                 //Act
-                ICreateCharacter toTest = mockMaker.getCharacterCreator(mockContext);
+                ICreateCharacter toTest = buildProcessor(mockContext);
                 var primaryTab = toTest.CreateCharacterGET().PrimaryTab;
                 var actual = primaryTab.Races;
 
@@ -150,12 +155,18 @@ namespace DnDProject.UnitTests.Services.Character._CreateCharacter
             }
         }
 
-        
-        
+
+        private static ICreateCharacter buildProcessor(AutoMock mockContext)
+        {
+            IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+            IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+            ICreateCharacter processor = ProcessorFactory.getCreateCharacterProcessor(access);
+            return processor;
+        }
 
 
 
-        
+
 
 
     }
