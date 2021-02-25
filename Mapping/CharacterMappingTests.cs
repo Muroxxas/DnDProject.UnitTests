@@ -70,6 +70,8 @@ namespace DnDProject.UnitTests.Mapping
             actual.Name.Should().Be(cm.Name);
         }
 
+
+
         //update
         [Test]
         public void CharacterMapper_MapNoteCMToNote_ValidCall()
@@ -143,6 +145,57 @@ namespace DnDProject.UnitTests.Mapping
 
             actual.Should().BeEquivalentTo(record,
                 options => options.Excluding(o => o.Character_id));
+        }
+        [Test]
+        public void CharacterMapper_mapItemToHeldItemRowCM()
+        {
+            var record = CreateTestData.GetSampleItem();
+            var expected = new HeldItemRowCM();
+            expected.Item_id = record.Item_id;
+            expected.Name = record.Name;
+            expected.Value = record.Value;
+            expected.isEquippable = record.isEquippable;
+            expected.isEquipped = false;
+            expected.requiresAttunement = record.requiresAttunement;
+            expected.isAttuned = false;
+
+            //act
+            var actual = CharacterMapper.mapItemToHeldItemRowCM(record);
+
+            //Assert
+            actual.Should().BeEquivalentTo(expected);            
+        }
+        [Test]
+        public void CharacterMapper_mapHeldItemRecordToHeldItemRowCM()
+        {
+            var record = CreateTestData.GetSampleHeldItem();
+            var expected = new HeldItemRowCM();
+            expected.Item_id = record.Item_id;
+            expected.isEquipped = record.isEquipped;
+            expected.isAttuned = record.IsAttuned;
+            expected.Count = record.count;
+
+            //Act
+            var actual = CharacterMapper.mapHeldItemRecordToHeldItemRowCM(record);
+
+            actual.Should().BeEquivalentTo(expected);
+        }
+
+        [Test]
+        public void CharacterMapper_mapSpellToKnownSpellRowCM_ValidCall()
+        {
+            var record = CreateTestData.GetSampleSpell();
+            var expected = new KnownSpellRowCM();
+            expected.Spell_id = record.Spell_id;
+            expected.Name = record.Name;
+            expected.School = null;
+            expected.Level = record.Level;
+            expected.isPrepared = false;
+
+            var actual = CharacterMapper.mapSpellToKnownSpellRowCM(record);
+
+            actual.Should().BeEquivalentTo(expected);
+
         }
     }
 }

@@ -27,6 +27,136 @@ namespace DnDProject.UnitTests.Processors
     [TestFixture]
     public class commonCharacterFunctionTests
     {
+        //Create
+        [Test]
+        public void CharacterCommons_CharacterObtainsItem_ValidCall()
+        {
+            //Arrange
+            List<Character_Item> heldItems = new List<Character_Item>();
+            var mockSet = new Mock<DbSet<Character_Item>>()
+                .SetupData(heldItems, o =>
+                {
+                    return heldItems.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+            Character_Item expected = new Character_Item
+            {
+                Character_id = CreateTestData.getSampleCharacter().Character_id,
+                Item_id = CreateTestData.GetSampleItem().Item_id,
+                count = 1
+            };
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.HeldItems).Returns(mockSet.Object);
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Set<Character_Item>()).Returns(mockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+
+                //act
+                ICharacterCommonFunctions toTest = ProcessorFactory.GetCharacterCommonFunctions(access);
+                toTest.addHeldItemToDb(expected.Character_id, expected.Item_id);
+
+                //Assert
+                heldItems.Should().ContainEquivalentOf(expected);
+
+            }
+        }
+        [Test]
+        public void CharacterCommons_CharacterLearnsClassSubclass_ValidCall()
+        {
+            List<Character_Class_Subclass> knownClasses = new List<Character_Class_Subclass>();
+            var mockSet = new Mock<DbSet<Character_Class_Subclass>>()
+                .SetupData(knownClasses, o =>
+                {
+                    return knownClasses.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+            Character_Class_Subclass expected = CreateTestData.GetCharacter_Class_Subclass();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.KnownClasses).Returns(mockSet.Object);
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<Character_Class_Subclass>()).Returns(mockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+
+                //act
+                ICharacterCommonFunctions toTest = ProcessorFactory.GetCharacterCommonFunctions(access);
+                toTest.characterLearnsClass(expected);
+
+                //Assert
+                knownClasses.Should().ContainEquivalentOf(expected);
+            }
+        }
+        [Test]
+        public void CharacterCommons_AddNoteToDb_ValidCall()
+        {
+            //Arrange
+            List<Note> notes = new List<Note>();
+            var mockSet = new Mock<DbSet<Note>>()
+                .SetupData(notes, o =>
+                {
+                    return notes.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+            Note expected = CreateTestData.GetSampleNote();
+
+            using( var mockContext = AutoMock.GetLoose()){
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.Notes).Returns(mockSet.Object);
+                mockContext.Mock<CharacterContext>()
+                    .Setup(x => x.Set<Note>()).Returns(mockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+
+                //act
+                ICharacterCommonFunctions toTest = ProcessorFactory.GetCharacterCommonFunctions(access);
+                toTest.addNote(expected);
+
+                notes.Should().ContainEquivalentOf(expected);
+
+            }
+
+        }
+        [Test]
+        public void CharacterCommons_CharacterLearnsSpell_ValidCall()
+        {
+            //Arrange
+            List<Spell_Character> knownSpells = new List<Spell_Character>();
+            var mockSet = new Mock<DbSet<Spell_Character>>()
+                .SetupData(knownSpells, o =>
+                {
+                    return knownSpells.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+            Spell_Character expected = CreateTestData.GetSampleKnownSpell();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.KnownSpells).Returns(mockSet.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Set<Spell_Character>()).Returns(mockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+
+                //act
+                ICharacterCommonFunctions toTest = ProcessorFactory.GetCharacterCommonFunctions(access);
+                toTest.characterLearnsSpell(expected.Character_id, expected.Spell_id);
+
+                //Assert
+                knownSpells.Should().ContainEquivalentOf(expected);
+            }
+        }
+
+
+
+
+        //READ
         [Test]
         public void CharacterCommons_spellExists_returnTrue()
         {
@@ -346,6 +476,8 @@ namespace DnDProject.UnitTests.Processors
                 actual.Should().BeFalse();
             }
         }
+
+
 
         [Test]
         public void CharacterCommons_RemoveNonExistantSpellFromKnownSpells_ValidCall()

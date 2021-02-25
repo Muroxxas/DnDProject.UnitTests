@@ -1,9 +1,17 @@
 ﻿using Autofac.Extras.Moq;
 using DnDProject.Backend.Contexts;
+using DnDProject.Backend.Mapping.Implementations;
 using DnDProject.Backend.Services.Implementations;
 using DnDProject.Backend.Services.Interfaces;
+using DnDProject.Backend.Unit_Of_Work.Interfaces;
+using DnDProject.Backend.UserAccess.Interfaces;
+using DnDProject.Entities.Character.ViewModels.PartialViewModels.Components;
 using DnDProject.Entities.Class.DataModels;
+using DnDProject.Entities.Items.DataModels;
 using DnDProject.Entities.Spells.DataModels;
+using DnDProject.UnitTests.Processors;
+using DnDProject.UnitTests.Unit_Of_Work;
+using DnDProject.UnitTests.UserAccess;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
@@ -33,8 +41,114 @@ namespace DnDProject.UnitTests.Services
         [Test]
         public void CharacterServices_GetBlankNoteComponent_ValidCall()
         {
+            var expected = new NoteCM();
+            expected.Index = 1;
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+                var creator = ProcessorFactory.getCreateCharacterProcessor(access);
+                var updater = ProcessorFactory.getUpdateCharacterProcessor(access);
+                var builder = ProcessorFactory.GetCharacterCMBuilder(access);
+
+                //Act                
+                var toTest = ServicesFactory.GetCharacterService(creator, updater, builder);
+                var actual = toTest.GetBlankNoteComponent(1);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+
+        [Test]
+        public void CharacterSerivces_buildHeldItemRowCM_ValidCall()
+        {
+            List<Item> items = CreateTestData.GetListOfItems();
+            var itemsMockSet = new Mock<DbSet<Item>>()
+                .SetupData(items, o =>
+                {
+                    return items.Single(x => x.Item_id.CompareTo(o.First()) == 0);
+                });
+            HeldItemRowCM expected = CharacterMapper.mapItemToHeldItemRowCM(CreateTestData.GetSampleItem());
+            Item record = CreateTestData.GetSampleItem();
+            expected.Count = 1;
+            expected.isAttuned = false;
+            expected.isEquipped = false;
+            expected.Index = 1;
+            using (var mockContext = AutoMock.GetLoose())
+            {
+
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Set<Item>()).Returns(itemsMockSet.Object);
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Items).Returns(itemsMockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+                var creator = ProcessorFactory.getCreateCharacterProcessor(access);
+                var updater = ProcessorFactory.getUpdateCharacterProcessor(access);
+                var builder = ProcessorFactory.GetCharacterCMBuilder(access);
+
+                //Act                
+                var toTest = ServicesFactory.GetCharacterService(creator, updater, builder);
+                var actual = toTest.buildHeldItemRowCM(1, record.Item_id);
+
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+        [Test]
+        public void CharacterServices_buildKnownSpellRowCM_ValidCall()
+        {
+            //Arrange
+            List<Spell> spells = CreateTestData.GetListOfSpells();
+            var mockSet = new Mock<DbSet<Spell>>()
+                .SetupData(spells, o =>
+                {
+                    return spells.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
+                });
+            var record = CreateTestData.GetSampleSpell();
+            KnownSpellRowCM expected = CharacterMapper.mapSpellToKnownSpellRowCM(record);
+            expected.Index = 1;
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Set<Spell>()).Returns(mockSet.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Spells).Returns(mockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+                var creator = ProcessorFactory.getCreateCharacterProcessor(access);
+                var updater = ProcessorFactory.getUpdateCharacterProcessor(access);
+                var builder = ProcessorFactory.GetCharacterCMBuilder(access);
+
+                //Act                
+                var toTest = ServicesFactory.GetCharacterService(creator, updater, builder);
+                var actual = toTest.buildKnownSpellRowCM(1, record.Spell_id);
+            }
+        }
+
+        [Test]
+        public void CharacterServices_buildItemDetailsCM_ValidCall()
+        {
+
             throw new NotImplementedException();
         }
+        [Test]
+        public void CharacterServices_buildSpellDetailsCM_ValidCall()
+        {
+            throw new NotImplementedException();
+        }
+
+
+
+
+
+
         [Test]
         public void CharacterServices_ExistingCharacterLearnsSpell_ValidCall()
         {
@@ -123,5 +237,6 @@ namespace DnDProject.UnitTests.Services
         {
             throw new NotImplementedException();
         }
+
     }
 }

@@ -82,6 +82,44 @@ namespace DnDProject.UnitTests.Repository
                 actual.Should().BeEquivalentTo(expected);
             };
         }
+        [Test]
+        public void SpellsRepository_GetKnownSpellRecordsForCharacter_ValidCall()
+        {
+            List<Spell_Character> knownSpells = CreateTestData.GetListOfKnownSpells();
+            var mockSet = new Mock<DbSet<Spell_Character>>()
+                .SetupData(knownSpells, o =>
+                {
+                    return knownSpells.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            List<Spell_Character> expected = new List<Spell_Character>();
+            Spell_Character Caleb_Tower = CreateTestData.GetSampleKnownSpell();
+            expected.Add(Caleb_Tower);
+
+            Spell_Character Caleb_WebOfFire = new Spell_Character()
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Spell_id = Guid.Parse("51b4c563-2040-4c7d-a23e-cab8d5d3c73b")
+            };
+            expected.Add(Caleb_WebOfFire);
+  
+            Guid Caleb_id = Guid.Parse("11111111-2222-3333-4444-555555555555");
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.KnownSpells).Returns(mockSet.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Set<Spell_Character>()).Returns(mockSet.Object);
+
+                //Act
+                ISpellsRepository toTest = mockContext.Create<SpellsRepository>();
+                var actual = toTest.GetKnownSpellRecordsForCharacter(Caleb_id);
+
+                //Arrange
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
 
         [Test]
         public void SpellsRepository_GetKnownSpellRecord_ValidCall()
@@ -362,6 +400,33 @@ namespace DnDProject.UnitTests.Repository
             }
         }
 
+        [Test]
+        public void SpellsRepository_GetSchool_ValidCall()
+        {
+            //Arrange
+            List<School> spellSchools = CreateTestData.GetListOfSchools();
+            var schoolsMockSet = new Mock<DbSet<School>>()
+                .SetupData(spellSchools, o =>
+                {
+                    return spellSchools.Single(x => x.School_id.CompareTo(o.First()) == 0);
+                });
+
+            var expected = CreateTestData.GetSampleSchool();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Schools).Returns(schoolsMockSet.Object);
+
+                //Act
+                ISpellsRepository toTest = mockContext.Create<SpellsRepository>();
+                var actual = toTest.GetSchool(expected.School_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
 
         [Test]
         public void SpellsRepository_RemoveSpell_ValidCall()
@@ -627,5 +692,7 @@ namespace DnDProject.UnitTests.Repository
                 actual.Should().NotContain(WebOfFire);
             }
         }
+
+
     }
 }

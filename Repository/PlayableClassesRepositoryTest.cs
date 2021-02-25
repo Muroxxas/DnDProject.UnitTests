@@ -55,15 +55,7 @@ namespace DnDProject.UnitTests.Repository
                 {
                     return listofCharacter_Class_Subclass.Single(x => x.Class_id.CompareTo(o.First()) == 0);
                 });
-            var Percy_id = Guid.Parse("6983e8dc-3e3c-4853-ac49-ba33f236723a");
-            var Fighter_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874");
-            var expected = new Character_Class_Subclass
-            {
-                Character_id = Percy_id,
-                Class_id = Fighter_id,
-                ClassLevel = 1,
-                RemainingHitDice = 1
-            };
+            var expected = CreateTestData.GetCharacter_Class_Subclass();
 
             using (var mockContext = AutoMock.GetLoose())
             {
@@ -72,7 +64,7 @@ namespace DnDProject.UnitTests.Repository
 
                 //Act
                 var toTest = mockContext.Create<PlayableClassRepository>();
-                toTest.CharacterLearnsClass(Percy_id, Fighter_id);
+                toTest.CharacterLearnsClass(expected);
                 //Assert
                 listofCharacter_Class_Subclass.Should().ContainEquivalentOf(expected);
             }

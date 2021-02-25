@@ -226,6 +226,83 @@ namespace DnDProject.UnitTests.Repository
                 actual.Should().BeEquivalentTo(expected);
             }
         }
+        [Test]
+        public void ItemsRepository_GetHeldItemRecord_ValidCall()
+        {
+            //Arrange
+            List<Character_Item> heldItems = CreateTestData.GetListOfHeldItems();
+
+
+            var heldItemsMockSet = new Mock<DbSet<Character_Item>>()
+              .SetupData(heldItems, o =>
+              {
+                  return heldItems.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+              });
+
+
+            var expected = CreateTestData.GetSampleHeldItem();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.HeldItems).Returns(heldItemsMockSet.Object);
+
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Set<Character_Item>()).Returns(heldItemsMockSet.Object);
+
+                //Act
+                IItemsRepository toTest = mockContext.Create<ItemsRepository>();
+                var actual = toTest.GetHeldItemRecord(expected.Character_id, expected.Item_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+        [Test]
+        public void ItemsRepository_GetHeldItemRecordsForCharacter_ValidCall()
+        {
+            //Arrange
+            List<Character_Item> heldItems = CreateTestData.GetListOfHeldItems();
+
+
+            var heldItemsMockSet = new Mock<DbSet<Character_Item>>()
+              .SetupData(heldItems, o =>
+              {
+                  return heldItems.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+              });
+
+            List<Character_Item> expected = new List<Character_Item>();
+            Character_Item Vax_Whisper = CreateTestData.GetSampleHeldItem();
+            expected.Add(Vax_Whisper);
+
+            Character_Item Vax_Potion = new Character_Item
+            {
+                Character_id = Guid.Parse("e3a0faef-99da-4d15-bff1-b535a42b955c"),
+                Item_id = Guid.Parse("2caa23dc-15e6-4a57-9bb6-62f6d8636ff7"),
+                count = 3
+            };
+            expected.Add(Vax_Potion);
+
+            Guid Vax_id = Guid.Parse("e3a0faef-99da-4d15-bff1-b535a42b955c");
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.HeldItems).Returns(heldItemsMockSet.Object);
+
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Set<Character_Item>()).Returns(heldItemsMockSet.Object);
+
+                //Act
+                IItemsRepository toTest = mockContext.Create<ItemsRepository>();
+                var actual = toTest.GetHeldItemRecordsForCharacter(Vax_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
 
         [Test]
         public void ItemsRepository_GetAllTags_ValidCall()

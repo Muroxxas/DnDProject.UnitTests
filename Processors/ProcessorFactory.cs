@@ -14,13 +14,23 @@ namespace DnDProject.UnitTests.Processors
         public static ICreateCharacter getCreateCharacterProcessor(IBaseUserAccess access)
         {
 
-            ICreateCharacter toTest = new CreateCharacter(access);
+            ICreateCharacter toTest = new CreateCharacter(access, GetCharacterCommonFunctions(access));
             return toTest;
 
+        }
+        public static IUpdateCharacter getUpdateCharacterProcessor(IBaseUserAccess access)
+        {
+            return null;
         }
         public static ICharacterCommonFunctions GetCharacterCommonFunctions(IBaseUserAccess access)
         {
             ICharacterCommonFunctions toTest = new CharacterCommonFunctions(access);
+            return toTest;
+        }
+
+        public static ICharacterCMBuilder GetCharacterCMBuilder(IBaseUserAccess access)
+        {
+            ICharacterCMBuilder toTest = new CharacterCMBuilder(access);
             return toTest;
         }
     }

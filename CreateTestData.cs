@@ -603,7 +603,8 @@ namespace DnDProject.UnitTests
             Character_Item Vax_Potion = new Character_Item
             {
                 Character_id = Guid.Parse("e3a0faef-99da-4d15-bff1-b535a42b955c"),
-                Item_id = Guid.Parse("2caa23dc-15e6-4a57-9bb6-62f6d8636ff7")
+                Item_id = Guid.Parse("2caa23dc-15e6-4a57-9bb6-62f6d8636ff7"),
+                count = 3
             };
 
             heldItems.Add(Vax_Potion);

@@ -900,6 +900,73 @@ namespace DnDProject.UnitTests.UserAccess
             }
         }
         [Test]
+        public void BaseUserAccess_GetKnownSpellRecordsForCharacter_ValidCall()
+        {
+            List<Spell_Character> knownSpells = CreateTestData.GetListOfKnownSpells();
+            var mockSet = new Mock<DbSet<Spell_Character>>()
+                .SetupData(knownSpells, o =>
+                {
+                    return knownSpells.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            List<Spell_Character> expected = new List<Spell_Character>();
+            Spell_Character Caleb_Tower = CreateTestData.GetSampleKnownSpell();
+            expected.Add(Caleb_Tower);
+
+            Spell_Character Caleb_WebOfFire = new Spell_Character()
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Spell_id = Guid.Parse("51b4c563-2040-4c7d-a23e-cab8d5d3c73b")
+            };
+            expected.Add(Caleb_WebOfFire);
+
+            Guid Caleb_id = Guid.Parse("11111111-2222-3333-4444-555555555555");
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.KnownSpells).Returns(mockSet.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Set<Spell_Character>()).Returns(mockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetKnownSpellRecordsForCharacter(Caleb_id);
+
+                //Arrange
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_GetSchool_ValidCall()
+        {
+            //Arrange
+            List<School> spellSchools = CreateTestData.GetListOfSchools();
+            var schoolsMockSet = new Mock<DbSet<School>>()
+                .SetupData(spellSchools, o =>
+                {
+                    return spellSchools.Single(x => x.School_id.CompareTo(o.First()) == 0);
+                });
+
+            var expected = CreateTestData.GetSampleSchool();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Schools).Returns(schoolsMockSet.Object);
+
+                //Act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetSchool(expected.School_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+        [Test]
         public void BaseUserAccess_CharacterLearnsSpell_ValidCall()
         {
             //Arrange
@@ -1040,6 +1107,87 @@ namespace DnDProject.UnitTests.UserAccess
                 expected.Should().BeOfType<Item>();
                 actual.Should().BeEquivalentTo(expected);
             };
+        }
+
+        [Test]
+        public void BaseUserAccess_GetHeldItemRecord_ValidCall()
+        {
+            //Arrange
+            List<Character_Item> heldItems = CreateTestData.GetListOfHeldItems();
+
+
+            var heldItemsMockSet = new Mock<DbSet<Character_Item>>()
+              .SetupData(heldItems, o =>
+              {
+                  return heldItems.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+              });
+
+
+            var expected = CreateTestData.GetSampleHeldItem();
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.HeldItems).Returns(heldItemsMockSet.Object);
+
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Set<Character_Item>()).Returns(heldItemsMockSet.Object);
+
+                //act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetHeldItemRecord(expected.Character_id, expected.Item_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+
+        [Test]
+        public void BaseUserAccess_GetHeldItemRecordsForCharacter_ValidCall()
+        {
+            //Arrange
+            List<Character_Item> heldItems = CreateTestData.GetListOfHeldItems();
+
+
+            var heldItemsMockSet = new Mock<DbSet<Character_Item>>()
+              .SetupData(heldItems, o =>
+              {
+                  return heldItems.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+              });
+
+            List<Character_Item> expected = new List<Character_Item>();
+            Character_Item Vax_Whisper = CreateTestData.GetSampleHeldItem();
+            expected.Add(Vax_Whisper);
+
+            Character_Item Vax_Potion = new Character_Item
+            {
+                Character_id = Guid.Parse("e3a0faef-99da-4d15-bff1-b535a42b955c"),
+                Item_id = Guid.Parse("2caa23dc-15e6-4a57-9bb6-62f6d8636ff7"),
+                count = 3
+            };
+            expected.Add(Vax_Potion);
+
+            Guid Vax_id = Guid.Parse("e3a0faef-99da-4d15-bff1-b535a42b955c");
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.HeldItems).Returns(heldItemsMockSet.Object);
+
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Set<Character_Item>()).Returns(heldItemsMockSet.Object);
+
+                //act
+                IUnitOfWork worker = mockContext.Create<UnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                var actual = toTest.GetHeldItemRecordsForCharacter(Vax_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
         }
         [Test]
         public void BaseUserAccess_GetItemsHeldBy_ValidCall()
@@ -1302,15 +1450,7 @@ namespace DnDProject.UnitTests.UserAccess
                 {
                     return listofCharacter_Class_Subclass.Single(x => x.Class_id.CompareTo(o.First()) == 0);
                 });
-            var Percy_id = Guid.Parse("6983e8dc-3e3c-4853-ac49-ba33f236723a");
-            var Fighter_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874");
-            var expected = new Character_Class_Subclass
-            {
-                Character_id = Percy_id,
-                Class_id = Fighter_id,
-                ClassLevel = 1,
-                RemainingHitDice = 1
-            };
+            var expected = CreateTestData.GetCharacter_Class_Subclass();
 
             using (var mockContext = AutoMock.GetLoose())
             {
@@ -1320,7 +1460,7 @@ namespace DnDProject.UnitTests.UserAccess
                 //Act
                 IUnitOfWork worker = mockContext.Create<UnitOfWork>();
                 IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
-                toTest.CharacterLearnsClass(Percy_id, Fighter_id);
+                toTest.CharacterLearnsClass(expected);
                 //Assert
                 listofCharacter_Class_Subclass.Should().ContainEquivalentOf(expected);
             }
