@@ -483,21 +483,21 @@ namespace DnDProject.UnitTests.Processors
         public void CharacterCommons_RemoveNonExistantSpellFromKnownSpells_ValidCall()
         {
             //Arrange
-            List<KnownSpellCM> knownSpellCMs = new List<KnownSpellCM>();
-            List<KnownSpellCM> expected = new List<KnownSpellCM>();
+            List<KnownSpellRowCM> KnownSpellRowCMs = new List<KnownSpellRowCM>();
+            List<KnownSpellRowCM> expected = new List<KnownSpellRowCM>();
 
-            KnownSpellCM realSpell = new KnownSpellCM()
+            KnownSpellRowCM realSpell = new KnownSpellRowCM()
             {
                 Spell_id = CreateTestData.GetSampleSpell().Spell_id
             };
             expected.Add(realSpell);
-            knownSpellCMs.Add(realSpell);
-            KnownSpellCM fakeSpell = new KnownSpellCM()
+            KnownSpellRowCMs.Add(realSpell);
+            KnownSpellRowCM fakeSpell = new KnownSpellRowCM()
             {
                 Spell_id = Guid.Parse("96bd962c-5283-4f28-8a39-e82dbe01ff1a")
             };
-            knownSpellCMs.Add(fakeSpell);
-            KnownSpellCM[] knownSpellArray = knownSpellCMs.ToArray();
+            KnownSpellRowCMs.Add(fakeSpell);
+            KnownSpellRowCM[] knownSpellArray = KnownSpellRowCMs.ToArray();
 
             using (var mockContext = AutoMock.GetLoose())
             {
@@ -541,16 +541,16 @@ namespace DnDProject.UnitTests.Processors
         [Test]
         public void CharacterCommons_RemoveNonExistantItemFromHeldItems_ValidCall()
         {
-            HeldItemCM[] heldItems = new HeldItemCM[2];
-            HeldItemCM[] expected = new HeldItemCM[1];
-            HeldItemCM realItem = new HeldItemCM
+            HeldItemRowCM[] heldItems = new HeldItemRowCM[2];
+            HeldItemRowCM[] expected = new HeldItemRowCM[1];
+            HeldItemRowCM realItem = new HeldItemRowCM
             {
                 Item_id = CreateTestData.GetSampleItem().Item_id
             };
             heldItems[0] = realItem;
             expected[0] = realItem;
             Guid false_id = Guid.Parse("96bd962c-5283-4f28-8a39-e82dbe01ff1a");
-            HeldItemCM fakeItem = new HeldItemCM
+            HeldItemRowCM fakeItem = new HeldItemRowCM
             {
                 Item_id = false_id
             };

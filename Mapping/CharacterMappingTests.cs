@@ -93,7 +93,8 @@ namespace DnDProject.UnitTests.Mapping
             //Assert
             //I want to map all properties except for the Note id - I don't want that accidentally being changed
             overwritten.Should().BeEquivalentTo(updated,
-                options => options.Excluding(o => o.Note_id));
+                options => options.Excluding(o => o.Note_id)
+                .Excluding(o => o.Index));
             overwritten.Note_id.Should().NotBe(updated.Note_id);
         }
 

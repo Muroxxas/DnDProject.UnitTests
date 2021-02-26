@@ -231,8 +231,8 @@ namespace DnDProject.UnitTests.processors._character._CreateCharacter
 
             CharacterVM CharVM = new CharacterVM();
             SpellsTabVM spellsTab = new SpellsTabVM();
-            spellsTab.KnownSpells = new KnownSpellCM[1];
-            KnownSpellCM knownSpellCM = new KnownSpellCM()
+            spellsTab.KnownSpells = new KnownSpellRowCM[1];
+            KnownSpellRowCM knownSpellCM = new KnownSpellRowCM()
             {
                 Spell_id = Guid.Parse("46d10bb8-84d2-408d-a928-5847ff99461f")
             };

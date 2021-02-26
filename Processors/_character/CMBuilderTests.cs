@@ -1,11 +1,13 @@
 ﻿using Autofac.Extras.Moq;
 using DnDProject.Backend.Contexts;
 using DnDProject.Backend.Mapping.Implementations;
+using DnDProject.Backend.Mapping.Implementations.Generic;
 using DnDProject.Backend.Processors.Interfaces;
 using DnDProject.Backend.Unit_Of_Work.Interfaces;
 using DnDProject.Backend.UserAccess.Interfaces;
 using DnDProject.Entities.Character.DataModels;
 using DnDProject.Entities.Character.ViewModels.PartialViewModels.Components;
+using DnDProject.Entities.Class.DataModels;
 using DnDProject.Entities.Items.DataModels;
 using DnDProject.Entities.Spells.DataModels;
 using DnDProject.UnitTests.Unit_Of_Work;
@@ -345,6 +347,281 @@ namespace DnDProject.UnitTests.Processors
                 //Assert
                 actual.Should().BeEquivalentTo(expected);
 
+            }
+        }
+
+        [Test]
+        public void CMBUilder_buildSpellDetailsCM_ValidCall()
+        {
+            //Arrange
+            List<Spell> spells = CreateTestData.GetListOfSpells();
+            var spellsMockSet = new Mock<DbSet<Spell>>()
+                .SetupData(spells, o =>
+                {
+                    return spells.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
+                });
+            List<School> spellSchools = CreateTestData.GetListOfSchools();
+            var schoolsMockSet = new Mock<DbSet<School>>()
+                .SetupData(spellSchools, o =>
+                {
+                    return spellSchools.Single(x => x.School_id.CompareTo(o.First()) == 0);
+                });
+            List<Material> materials = CreateTestData.GetListOfMaterials();
+            var materialsMockSet = new Mock<DbSet<Material>>()
+                .SetupData(materials, o =>
+                {
+                    return materials.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
+                });
+
+
+            var VoltaicBolt_id = Guid.Parse("a9756f3d-55d0-40cd-8083-6b547e4932ab");
+
+            //I expect to get the details CM for Brenatto's Voltaic Bolt
+            var expected = new SpellDetailsCM
+            {
+                Spell_id = Guid.Parse("a9756f3d-55d0-40cd-8083-6b547e4932ab"),
+                Name = "Brenatto's Voltaic Bolt",
+                Description = "The caster's next ranged attack deals an additional 3d6 lightning damage",
+                Level = 1,
+                School = "Evocation",
+                CastingTime = "1 Bonus Action",
+                Duration = "1 round",
+                Range = "30 feet",
+                RequiresVerbal = false,
+                RequiresSomantic = true,
+                RequiresMaterial = true,
+                RequiresConcentration = false,
+                Material = "A bit of fleece"
+            };
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Set<Spell>()).Returns(spellsMockSet.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Spells).Returns(spellsMockSet.Object);
+
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Set<School>()).Returns(schoolsMockSet.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Schools).Returns(schoolsMockSet.Object);
+
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Materials).Returns(materialsMockSet.Object);
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.Set<Material>()).Returns(materialsMockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+
+                //Act
+                ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
+                var actual = toTest.buildSpellDetailsCM(VoltaicBolt_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+        [Test]
+        public void CMBuilder_buildItemDetailsCM_ValidCall()
+        {
+            //Arrange
+            List<Item> Items = CreateTestData.GetListOfItems();
+
+            List<Item_Tag> itemTags = CreateTestData.GetListOfItemTags();
+            List<Tag> tags = CreateTestData.GetListOfTags();
+            var ITmockSet = new Mock<DbSet<Item_Tag>>()
+                .SetupData(itemTags, o =>
+                {
+                    return itemTags.Single(x => x.Item_id.CompareTo(o.First()) == 0);
+                });
+            var tagsMockSet = new Mock<DbSet<Tag>>()
+                .SetupData(tags, o =>
+                {
+                    return tags.Single(x => x.Tag_id.CompareTo(o.First()) == 0);
+                });
+            var itemsMockSet = new Mock<DbSet<Item>>()
+                .SetupData(Items, o =>
+                {
+                    return Items.Single(x => x.Item_id.CompareTo(o.First()) == 0);
+                });
+
+            Item Whisper = CreateTestData.GetSampleItem();
+            ItemDetailsCM expected = new ItemDetailsCM
+            {
+                Item_id = Whisper.Item_id,
+                Name = Whisper.Name,
+                Description = Whisper.Description,
+                Value = Whisper.Value,
+                isEquippable = Whisper.isEquippable,
+                isConsumable = Whisper.isConsumable,
+                requiresAttunement = Whisper.requiresAttunement
+            };
+            String[] whisperTags = new string[2];
+            whisperTags[0] = "Weapon";
+            whisperTags[1] = "Wondorous Item";
+            expected.Tags = whisperTags;
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Tags).Returns(tagsMockSet.Object);
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Set<Tag>()).Returns(tagsMockSet.Object);
+
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Item_Tags).Returns(ITmockSet.Object);
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Set<Item_Tag>()).Returns(ITmockSet.Object);
+
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Items).Returns(itemsMockSet.Object);
+                mockContext.Mock<ItemsContext>()
+                    .Setup(x => x.Set<Item>()).Returns(itemsMockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+
+                //Act
+                ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
+                var actual = toTest.buildItemDetailsCM(Whisper.Item_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+
+        [Test]
+        public void CMBuilder_buildNewKnownClassRowCM()
+        {
+            List<PlayableClass> playableClasses = CreateTestData.GetPlayableClasses();
+            var classMockSet = new Mock<DbSet<PlayableClass>>()
+               .SetupData(playableClasses, o =>
+               {
+                   return playableClasses.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+               });
+            ReadModelMapper<PlayableClass, ClassesListModel> mapper = new ReadModelMapper<PlayableClass, ClassesListModel>();
+            List<ClassesListModel> classes = new List<ClassesListModel>();
+            foreach(PlayableClass x in playableClasses)
+            {
+                ClassesListModel lm = mapper.mapDataModelToViewModel(x);
+                classes.Add(lm);
+            }
+
+            KnownClassRowCM expected = new KnownClassRowCM()
+            {
+                Level = 1,
+                HitDice = 1,
+                Classes = classes
+            };
+
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Classes).Returns(classMockSet.Object);
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<PlayableClass>()).Returns(classMockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+
+                //Act
+                ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
+                var actual = toTest.buildNewKnownClassRowCM();
+
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+        [Test]
+        public void CMBuilder_buildExistingKnownClassRowCM()
+        {
+            //Arrange
+            List<PlayableClass> playableClasses = CreateTestData.GetPlayableClasses();
+            var classMockSet = new Mock<DbSet<PlayableClass>>()
+               .SetupData(playableClasses, o =>
+               {
+                   return playableClasses.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+               });
+            List<Subclass> playableSubclasses = CreateTestData.GetListOfSubclass();
+            var subclassMockSet = new Mock<DbSet<Subclass>>()
+                .SetupData(playableSubclasses, o =>
+                {
+                    return playableSubclasses.Single(x => x.Class_id.CompareTo(o.First()) == 0);
+                });
+            List<Character_Class_Subclass> ListOfCCSC = CreateTestData.GetListOfCharacter_Class_Subclass();
+            var ccscMockSet = new Mock<DbSet<Character_Class_Subclass>>()
+                .SetupData(ListOfCCSC, o =>
+                {
+                    return ListOfCCSC.Single(x => x.Character_id.CompareTo(o.First()) == 0);
+                });
+
+            //Setting up the expected result
+            //The found record should indicate Percy is a Level 20 Fighter, with the Gunslinger subclass.
+            ReadModelMapper<PlayableClass, ClassesListModel> classMapper = new ReadModelMapper<PlayableClass, ClassesListModel>();
+            List<ClassesListModel> classes = new List<ClassesListModel>();
+            foreach (PlayableClass x in playableClasses)
+            {
+                ClassesListModel lm = classMapper.mapDataModelToViewModel(x);
+                classes.Add(lm);
+            };
+
+
+            PlayableClass fighter = CreateTestData.GetSampleClass();
+            ReadModelMapper<Subclass, SubclassesListModel> subclassMapper = new ReadModelMapper<Subclass, SubclassesListModel>();
+            List<SubclassesListModel> subclasses = new List<SubclassesListModel>();
+            foreach(Subclass x in playableSubclasses.Where(x => x.Class_id == fighter.Class_id))
+            {
+                SubclassesListModel lm = subclassMapper.mapDataModelToViewModel(x);
+                subclasses.Add(lm);
+            }
+
+            Character_Class_Subclass Percy_Fighter_Gunslinger = new Character_Class_Subclass
+            {
+                Character_id = Guid.Parse("6983e8dc-3e3c-4853-ac49-ba33f236723a"),
+                Class_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874"),
+                Subclass_id = Guid.Parse("a8e9e19f-b04f-4d6c-baf8-ada5cd40c30b"),
+                RemainingHitDice = 20,
+                ClassLevel = 20
+            };
+            KnownClassRowCM expected = new KnownClassRowCM
+            {
+                Class_id = Percy_Fighter_Gunslinger.Class_id,
+                Subclass_id = Percy_Fighter_Gunslinger.Subclass_id,
+                Classes = classes,
+                Subclasses = subclasses,
+                HitDice = Percy_Fighter_Gunslinger.RemainingHitDice,
+                Level = Percy_Fighter_Gunslinger.ClassLevel
+            };
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Classes).Returns(classMockSet.Object);
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<PlayableClass>()).Returns(classMockSet.Object);
+
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Subclasses).Returns(subclassMockSet.Object);
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<Subclass>()).Returns(subclassMockSet.Object);
+
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.KnownClasses).Returns(ccscMockSet.Object);
+                mockContext.Mock<PlayableClassContext>()
+                    .Setup(x => x.Set<Character_Class_Subclass>()).Returns(ccscMockSet.Object);
+
+                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
+                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+
+                //Act
+                ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
+                var actual = toTest.buildExistingKnownClassRowCM(Percy_Fighter_Gunslinger.Character_id, Percy_Fighter_Gunslinger.Class_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
             }
         }
     }
