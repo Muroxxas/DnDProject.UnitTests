@@ -153,10 +153,13 @@
     <Compile Include="Controllers\CharacterControllerTests.cs" />
     <Compile Include="CreateTestData.cs" />
     <Compile Include="Mapping\CharacterMappingTests.cs" />
+    <Compile Include="mockMaker.cs" />
     <Compile Include="Processors\ProcessorFactory.cs" />
     <Compile Include="Processors\_character\CMBuilderTests.cs" />
     <Compile Include="Processors\_character\commonCharacterFunctionTests.cs" />
     <Compile Include="Processors\_character\ItemSearchTests.cs" />
+    <Compile Include="Processors\_character\mockMaker.cs" />
+    <Compile Include="Processors\_character\SpellSearchTests.cs" />
     <Compile Include="Processors\_character\UpdateCharacterTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\CharacterRepositoryTests.cs" />
@@ -175,7 +178,6 @@
     <Compile Include="Repository\SubclassesRepoTests.cs" />
     <Compile Include="Processors\_character\_CreateCharacter\GETTests.cs" />
     <Compile Include="Processors\_character\_CreateCharacter\INVALIDTests.cs" />
-    <Compile Include="mockMaker.cs" />
     <Compile Include="Processors\_character\_CreateCharacter\POSTTests.cs" />
     <Compile Include="Services\CharacterServiceTests.cs" />
     <Compile Include="Services\ServicesFactory.cs" />

@@ -11,6 +11,7 @@ namespace DnDProject.UnitTests.Services
 {
     public static class ServicesFactory
     {
+
         public static ICharacterServices GetCharacterService(ICreateCharacter creator, IUpdateCharacter updater, ICharacterCMBuilder builder) 
         { 
             return new CharacterServices(creator, updater, builder);
