@@ -2,10 +2,12 @@
 using DnDProject.Backend.Contexts;
 using DnDProject.Backend.Processors.Implementations.ItemsSearch;
 using DnDProject.Backend.Processors.Implementations.ItemsSearch.Filters;
+using DnDProject.Entities.Character.ViewModels.PartialViewModels.Components;
 using DnDProject.Entities.Items.DataModels;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -110,5 +112,7 @@ namespace DnDProject.UnitTests.Processors._character
 
             }
         }
+
+      
     }
 }

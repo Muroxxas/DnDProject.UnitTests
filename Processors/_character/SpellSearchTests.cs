@@ -2,10 +2,12 @@
 using DnDProject.Backend.Contexts;
 using DnDProject.Backend.Processors.Implementations.SpellsSearch;
 using DnDProject.Backend.Processors.Implementations.SpellsSearch.Filters;
+using DnDProject.Entities.Character.ViewModels.PartialViewModels.Components;
 using DnDProject.Entities.Spells.DataModels;
 using FluentAssertions;
 using Moq;
 using NUnit.Framework;
+using PagedList;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
@@ -115,5 +117,9 @@ namespace DnDProject.UnitTests.Processors._character
                 actual.Should().BeEquivalentTo(expected);
             }
         }
+
+
+      
+
     }
 }

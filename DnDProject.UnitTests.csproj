@@ -154,7 +154,9 @@
     <Compile Include="CreateTestData.cs" />
     <Compile Include="Mapping\CharacterMappingTests.cs" />
     <Compile Include="mockMaker.cs" />
+    <Compile Include="Processors\ItemSearchFacadeTests.cs" />
     <Compile Include="Processors\ProcessorFactory.cs" />
+    <Compile Include="Processors\SpellSearchFacadeTests.cs" />
     <Compile Include="Processors\_character\CMBuilderTests.cs" />
     <Compile Include="Processors\_character\commonCharacterFunctionTests.cs" />
     <Compile Include="Processors\_character\ItemSearchTests.cs" />
