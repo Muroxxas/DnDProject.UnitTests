@@ -1,8 +1,10 @@
 ﻿using DnDProject.Entities.Character.DataModels;
 using DnDProject.Entities.Character.ViewModels;
+using DnDProject.Entities.Character.ViewModels.PartialViewModels.Components;
 using DnDProject.Entities.Class.DataModels;
 using DnDProject.Entities.Items.DataModels;
 using DnDProject.Entities.Races.DataModels;
+using DnDProject.Entities.Races.ViewModels.PartialViewModels.ComponentModels;
 using DnDProject.Entities.Spells.DataModels;
 using System;
 using System.Collections.Generic;
@@ -952,6 +954,60 @@ namespace DnDProject.UnitTests
 
             return raceAbilities;
         }
-    }
 
+        public static List<RaceListModel> GetRacesListModels()
+        {
+            List<RaceListModel> theList = new List<RaceListModel>();
+            RaceListModel Human = new RaceListModel
+            {
+                Race_id = Guid.Parse("14f91515-0107-4c79-a3da-be3cf48d7a26"),
+                Name = "Human"
+            };
+            RaceListModel HalfElf = new RaceListModel
+            {
+                Race_id = Guid.Parse("e482542d-f06a-4708-b436-d3771c7a8e40"),
+                Name = "Half-elf"
+            };
+            RaceListModel Goliath = new RaceListModel
+            {
+                Race_id = Guid.Parse("86a5c77c-b740-4bdb-bbe4-c1d19198a4dd"),
+                Name = "Goliath"
+            };
+
+            theList.Add(Human);
+            theList.Add(HalfElf);
+            theList.Add(Goliath);
+
+            return theList;
+        }
+        public static ClassesCM GetNonNullClassesCM()
+        {
+            List<ClassesListModel> classes = new List<ClassesListModel>();
+            foreach (PlayableClass pc in GetPlayableClasses())
+            {
+                ClassesListModel clm = new ClassesListModel
+                {
+                    Class_id = pc.Class_id,
+                    Name = pc.Name
+                };
+                classes.Add(clm);         
+            }
+
+            ClassRowCM classRowCM = new ClassRowCM
+            {
+                playableClasses = classes.ToArray(),
+                Index = 1
+            };
+
+            ClassRowCM[] classesArray = new ClassRowCM[1];
+            classesArray[0] = classRowCM;
+
+            ClassesCM classesCM = new ClassesCM
+            {
+                SelectedClasses = classesArray
+            };
+
+            return classesCM;
+        } 
+    }
 }

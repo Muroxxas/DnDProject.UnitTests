@@ -443,7 +443,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void ItemsRepository_CharacterObtainsItem_ValidCall()
+        public void ItemsRepository_CharacterObtainsItem_ByIDs_ValidCall()
         {
             //Arrange
             List<Character_Item> heldItems = new List<Character_Item>();
@@ -480,6 +480,41 @@ namespace DnDProject.UnitTests.Repository
 
                 //Assert
                 actual.Should().ContainEquivalentOf(Whisper);
+
+            }
+        }
+
+        [Test]
+        public void ItemsRepository_CharacterObtainsItem_ByRecord_ValidCall()
+        {
+            //Arrange
+            List<Character_Item> heldItems = new List<Character_Item>();
+            var mockSet = new Mock<DbSet<Character_Item>>()
+                .SetupData(heldItems, o =>
+                {
+                    return heldItems.Single(x => x.Item_id.CompareTo(o.First())==0);
+                });
+                 
+            var expected = new Character_Item
+            {
+                Character_id = Guid.Parse("e3a0faef-99da-4d15-bff1-b535a42b955c"),
+                Item_id = Guid.Parse("709135c3-6f89-46cb-80ae-4097b621e3b0"),
+                isEquipped = true,
+                IsAttuned = true
+            };
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<ItemsContext>()
+                    .Setup(X => X.HeldItems).Returns(mockSet.Object);
+
+                //Act
+                IItemsRepository toTest = mockContext.Create<ItemsRepository>();
+                toTest.CharacterObtainsItem(expected);
+
+                var actual = heldItems.First();
+                //assert
+                actual.Should().BeEquivalentTo(expected);
 
             }
         }

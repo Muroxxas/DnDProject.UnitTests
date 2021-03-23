@@ -157,6 +157,7 @@
     <Compile Include="Processors\ItemSearchFacadeTests.cs" />
     <Compile Include="Processors\ProcessorFactory.cs" />
     <Compile Include="Processors\SpellSearchFacadeTests.cs" />
+    <Compile Include="Processors\_character\CreateCharacterTests.cs" />
     <Compile Include="Processors\_character\CMBuilderTests.cs" />
     <Compile Include="Processors\_character\commonCharacterFunctionTests.cs" />
     <Compile Include="Processors\_character\ItemSearchTests.cs" />
@@ -178,9 +179,6 @@
     <Compile Include="Repository\StatsRepositoryTests.cs" />
     <Compile Include="Repository\SubclassAbilitiesRepoTests.cs" />
     <Compile Include="Repository\SubclassesRepoTests.cs" />
-    <Compile Include="Processors\_character\_CreateCharacter\GETTests.cs" />
-    <Compile Include="Processors\_character\_CreateCharacter\INVALIDTests.cs" />
-    <Compile Include="Processors\_character\_CreateCharacter\POSTTests.cs" />
     <Compile Include="Services\CharacterServiceTests.cs" />
     <Compile Include="Services\ServicesFactory.cs" />
     <Compile Include="Unit Of Work\UoW Factory.cs" />

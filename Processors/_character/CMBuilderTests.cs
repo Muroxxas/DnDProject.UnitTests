@@ -493,136 +493,476 @@ namespace DnDProject.UnitTests.Processors
         }
 
         [Test]
-        public void CMBuilder_buildNewKnownClassRowCM()
+        public void CMBuilder_buildNewClassRowCM()
         {
+
+            //Arrange
             List<PlayableClass> playableClasses = CreateTestData.GetPlayableClasses();
-            var classMockSet = new Mock<DbSet<PlayableClass>>()
-               .SetupData(playableClasses, o =>
-               {
-                   return playableClasses.Single(x => x.Class_id.CompareTo(o.First()) == 0);
-               });
-            ReadModelMapper<PlayableClass, ClassesListModel> mapper = new ReadModelMapper<PlayableClass, ClassesListModel>();
-            List<ClassesListModel> classes = new List<ClassesListModel>();
-            foreach(PlayableClass x in playableClasses)
+            List<ClassesListModel> ClassesLM = new List<ClassesListModel>();
+            foreach(PlayableClass playableClass in playableClasses)
             {
-                ClassesListModel lm = mapper.mapDataModelToViewModel(x);
-                classes.Add(lm);
+                ReadModelMapper<PlayableClass, ClassesListModel> mapper = new ReadModelMapper<PlayableClass, ClassesListModel>();
+                ClassesListModel lm = mapper.mapDataModelToViewModel(playableClass);
+                ClassesLM.Add(lm);
             }
 
-            KnownClassRowCM expected = new KnownClassRowCM()
+            var expected = new ClassRowCM
             {
+                Index = 5,
                 Level = 1,
-                HitDice = 1,
-                Classes = classes
+                RemainingHitDice = 1,
+                playableClasses = ClassesLM.ToArray()
+
             };
-
-
-            using (var mockContext = AutoMock.GetLoose())
+            using (var mockAccess = AutoMock.GetLoose())
             {
-                mockContext.Mock<PlayableClassContext>()
-                    .Setup(x => x.Classes).Returns(classMockSet.Object);
-                mockContext.Mock<PlayableClassContext>()
-                    .Setup(x => x.Set<PlayableClass>()).Returns(classMockSet.Object);
 
-                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
-                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
+                mockAccess.Mock<IBaseUserAccess>()
+                    .Setup(x => x.GetAllPlayableClasses()).Returns(playableClasses);
 
+                IBaseUserAccess access = mockAccess.Create<IBaseUserAccess>();
                 //Act
                 ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
-                var actual = toTest.buildNewKnownClassRowCM();
+                var actual = toTest.buildNewClassRowCM(5);
 
+                //Assert
                 actual.Should().BeEquivalentTo(expected);
 
             }
         }
         [Test]
-        public void CMBuilder_buildExistingKnownClassRowCM()
+        public void CMBuilder_buildKnownClassRowCM()
         {
+
             //Arrange
+            var Wizard_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b");
+            var Caleb_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4");
+            var Transmutation_id = Guid.Parse("c8d2e23a-a193-4e06-8814-9180d4830732");
+
             List<PlayableClass> playableClasses = CreateTestData.GetPlayableClasses();
-            var classMockSet = new Mock<DbSet<PlayableClass>>()
-               .SetupData(playableClasses, o =>
-               {
-                   return playableClasses.Single(x => x.Class_id.CompareTo(o.First()) == 0);
-               });
-            List<Subclass> playableSubclasses = CreateTestData.GetListOfSubclass();
-            var subclassMockSet = new Mock<DbSet<Subclass>>()
-                .SetupData(playableSubclasses, o =>
-                {
-                    return playableSubclasses.Single(x => x.Class_id.CompareTo(o.First()) == 0);
-                });
-            List<Character_Class_Subclass> ListOfCCSC = CreateTestData.GetListOfCharacter_Class_Subclass();
-            var ccscMockSet = new Mock<DbSet<Character_Class_Subclass>>()
-                .SetupData(ListOfCCSC, o =>
-                {
-                    return ListOfCCSC.Single(x => x.Character_id.CompareTo(o.First()) == 0);
-                });
-
-            //Setting up the expected result
-            //The found record should indicate Percy is a Level 20 Fighter, with the Gunslinger subclass.
-            ReadModelMapper<PlayableClass, ClassesListModel> classMapper = new ReadModelMapper<PlayableClass, ClassesListModel>();
-            List<ClassesListModel> classes = new List<ClassesListModel>();
-            foreach (PlayableClass x in playableClasses)
+            List<ClassesListModel> ClassesLM = new List<ClassesListModel>();
+            foreach (PlayableClass playableClass in playableClasses)
             {
-                ClassesListModel lm = classMapper.mapDataModelToViewModel(x);
-                classes.Add(lm);
-            };
-
-
-            PlayableClass fighter = CreateTestData.GetSampleClass();
-            ReadModelMapper<Subclass, SubclassesListModel> subclassMapper = new ReadModelMapper<Subclass, SubclassesListModel>();
-            List<SubclassesListModel> subclasses = new List<SubclassesListModel>();
-            foreach(Subclass x in playableSubclasses.Where(x => x.Class_id == fighter.Class_id))
-            {
-                SubclassesListModel lm = subclassMapper.mapDataModelToViewModel(x);
-                subclasses.Add(lm);
+                ReadModelMapper<PlayableClass, ClassesListModel> mapper = new ReadModelMapper<PlayableClass, ClassesListModel>();
+                ClassesListModel lm = mapper.mapDataModelToViewModel(playableClass);
+                ClassesLM.Add(lm);
             }
 
-            Character_Class_Subclass Percy_Fighter_Gunslinger = new Character_Class_Subclass
+            List<Subclass> playableSubclasses = CreateTestData.GetListOfSubclass();
+            List<SubclassesListModel> SubclassesLM = new List<SubclassesListModel>();
+            foreach(Subclass subclass in playableSubclasses.Where(x => x.Class_id == Wizard_id))
             {
-                Character_id = Guid.Parse("6983e8dc-3e3c-4853-ac49-ba33f236723a"),
-                Class_id = Guid.Parse("15478d70-f96e-4c14-aeaf-4a1e35605874"),
-                Subclass_id = Guid.Parse("a8e9e19f-b04f-4d6c-baf8-ada5cd40c30b"),
-                RemainingHitDice = 20,
-                ClassLevel = 20
+                ReadModelMapper<Subclass, SubclassesListModel> mapper = new ReadModelMapper<Subclass, SubclassesListModel>();
+                SubclassesListModel lm = mapper.mapDataModelToViewModel(subclass);
+                SubclassesLM.Add(lm);
+            }
+
+            Character_Class_Subclass Caleb_Wizard_Transmutation = new Character_Class_Subclass
+            {
+                Character_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                Class_id = Guid.Parse("4e82620a-0496-4ecc-b6d4-05faa064310b"),
+                Subclass_id = Guid.Parse("c8d2e23a-a193-4e06-8814-9180d4830732"),
+                RemainingHitDice = 12,
+                ClassLevel = 12
             };
-            KnownClassRowCM expected = new KnownClassRowCM
+
+            ClassRowCM expected = new ClassRowCM
             {
-                Class_id = Percy_Fighter_Gunslinger.Class_id,
-                Subclass_id = Percy_Fighter_Gunslinger.Subclass_id,
-                Classes = classes,
-                Subclasses = subclasses,
-                HitDice = Percy_Fighter_Gunslinger.RemainingHitDice,
-                Level = Percy_Fighter_Gunslinger.ClassLevel
+                Index = 1,
+                playableClasses = ClassesLM.ToArray(),
+                SelectedClass_id = Wizard_id,
+
+                Level = 12,
+                RemainingHitDice = 12,
+
+                subclasses = SubclassesLM.ToArray(),
+                SelectedSubclass_id = Transmutation_id
             };
 
-            using (var mockContext = AutoMock.GetLoose())
+            using(var mockAccess = AutoMock.GetLoose())
             {
-                mockContext.Mock<PlayableClassContext>()
-                    .Setup(x => x.Classes).Returns(classMockSet.Object);
-                mockContext.Mock<PlayableClassContext>()
-                    .Setup(x => x.Set<PlayableClass>()).Returns(classMockSet.Object);
+                mockAccess.Mock<IBaseUserAccess>()
+                    .Setup(x => x.GetKnownClassRecordOfCharaterAndClass(Caleb_id, Wizard_id))
+                    .Returns(Caleb_Wizard_Transmutation);
+                mockAccess.Mock<IBaseUserAccess>()
+                    .Setup(x => x.GetAllSubclassesForClass(Wizard_id))
+                    .Returns(playableSubclasses.Where(x => x.Class_id == Wizard_id));
 
-                mockContext.Mock<PlayableClassContext>()
-                    .Setup(x => x.Subclasses).Returns(subclassMockSet.Object);
-                mockContext.Mock<PlayableClassContext>()
-                    .Setup(x => x.Set<Subclass>()).Returns(subclassMockSet.Object);
-
-                mockContext.Mock<PlayableClassContext>()
-                    .Setup(x => x.KnownClasses).Returns(ccscMockSet.Object);
-                mockContext.Mock<PlayableClassContext>()
-                    .Setup(x => x.Set<Character_Class_Subclass>()).Returns(ccscMockSet.Object);
-
-                IUnitOfWork uow = UoW_Factory.getUnitofWork(mockContext);
-                IBaseUserAccess access = UserAccessFactory.getBaseUserAccess(uow);
-
+                IBaseUserAccess access = mockAccess.Create<IBaseUserAccess>();
                 //Act
                 ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
-                var actual = toTest.buildExistingKnownClassRowCM(Percy_Fighter_Gunslinger.Character_id, Percy_Fighter_Gunslinger.Class_id);
+                var actual = toTest.buildKnownClassRowCM(1, Caleb_Wizard_Transmutation, ClassesLM.ToArray());
 
                 //Assert
                 actual.Should().BeEquivalentTo(expected);
             }
+        }
+
+        [Test]
+        public void CMBuilder_buildStatsCM()
+        {
+            //Arrange
+            var expected = new StatsCM
+            {
+                Strength = 10,
+                Dexterity = 12,
+                Constitution = 16,
+                Intelligence = 20,
+                Wisdom = 16,
+                Charisma = 16
+            };
+            var CalebStats = new Stats()
+            {
+                Character_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                Strength = 10,
+                Dexterity = 12,
+                Constitution = 16,
+                Intelligence = 20,
+                Wisdom = 16,
+                Charisma = 16
+            };
+            var Caleb_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4");
+            using (var mockAccess = AutoMock.GetLoose())
+            {
+                mockAccess.Mock<IBaseUserAccess>()
+                    .Setup(x => x.GetStatsRecord(Caleb_id)).Returns(CalebStats);
+
+
+                //Act
+                var access = mockAccess.Create<IBaseUserAccess>();
+                ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
+                var actual = toTest.buildStatsCM(Caleb_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+
+        [Test]
+        public void CMBuilter_buildStatBonusCM()
+        {
+            //Arrange
+            var expected = new StatBonusCM
+            {
+                Strength = 0,
+                Dexterity = 1,
+                Constitution = 3,
+                Intelligence = 5,
+                Wisdom = -3,
+                Charisma = 3
+            };
+            var CalebStatsCM = new StatsCM
+            {
+                Strength = 10,
+                Dexterity = 12,
+                Constitution = 16,
+                Intelligence = 20,
+                Wisdom = 5,
+                Charisma = 16
+            };
+            var CalebStats = new Stats()
+            {
+                Character_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                Strength = 10,
+                Dexterity = 12,
+                Constitution = 16,
+                Intelligence = 20,
+                Wisdom = 5,
+                Charisma = 16
+            };
+
+            using (var mockAccess = AutoMock.GetLoose())
+            {
+                var Caleb_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4");
+                mockAccess.Mock<IBaseUserAccess>()
+                    .Setup(x => x.GetStatsRecord(Caleb_id)).Returns(CalebStats);
+                //Act
+                var access = mockAccess.Create<IBaseUserAccess>();
+                ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
+                var actual = toTest.buildStatBonusCM(CalebStatsCM);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+            }
+        }
+
+        [Test]
+        public void CMBuilder_buildProficiencyCM()
+        {
+            var skillBonus = new SkillBonusCM
+            {
+                Acrobatics = 1,
+                AnimalHandling = -3,
+                Arcana = 8,
+                Athletics = 0,
+                Deception = 6,
+
+                History = 8,
+                Insight = -3,
+                Intimidation = 3,
+                Investigation = 8,
+                Medicine = -3,
+                Nature = 5,
+
+                Perception = -3,
+                Performance = 3,
+                Persuasion = 3,
+                Religion = 8,
+                SleightOfHand = 1,
+
+                Stealth = 1,
+                Survival = -3
+            };
+            var statBonus = new StatBonusCM
+            {
+                Strength = 0,
+                Dexterity = 1,
+                Constitution = 3,
+                Intelligence = 5,
+                Wisdom = -3,
+                Charisma = 3
+            };
+            var proficiencies = new IsProficientCM
+            {
+                Acrobatics = false,
+                AnimalHandling = false,
+                Arcana = true,
+                Athletics = false,
+                Deception = true,
+
+                History = true,
+                Intimidation = false,
+                Investigation = true,
+                Medicine = false,
+                Nature = false,
+
+                Perception = false,
+                Performance = false,
+                Persuasion = false,
+                Religion = true,
+                SleightOfHand = false,
+
+                Stealth = false,
+                Survival = false
+            };
+            var expected = new ProficiencyCM
+            {
+                ProficiencyBonus = 3,
+                TotalBonus = skillBonus,
+                isProficient = proficiencies
+            };
+
+            var proficiencyRecord = new IsProficient
+            {
+                Character_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                StrengthSave = false,
+                DexteritySave = false,
+                ConstitutionSave = true,
+                IntelligenceSave = false,
+                WisdomSave = false,
+                CharismaSave = false,
+
+                Acrobatics = false,
+                AnimalHandling = false,
+                Arcana = true,
+                Athletics = false,
+                Deception = true,
+
+                History = true,
+                Intimidation = false,
+                Investigation = true,
+                Medicine = false,
+                Nature = false,
+
+                Perception = false,
+                Performance = false,
+                Persuasion = false,
+                Religion = true,
+                SleightOfHand = false,
+
+                Stealth = false,
+                Survival = false
+            };
+            var Caleb_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4");
+            using (var mockAccess = AutoMock.GetLoose())
+            {
+                mockAccess.Mock<IBaseUserAccess>()
+                    .Setup(x => x.GetProficiencyRecord(Caleb_id)).Returns(proficiencyRecord);
+
+                //Act
+                var access = mockAccess.Create<IBaseUserAccess>();
+                ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
+                var actual = toTest.buildProficiencyCM(Caleb_id, statBonus, 12);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+        }
+
+        [Test]
+        public void CMBUilder_buildIsProficientCM()
+        {
+            Guid Caleb_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4");
+            IsProficient CalebRecord = new IsProficient
+            {
+                Character_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                StrengthSave = false,
+                DexteritySave = false,
+                ConstitutionSave = true,
+                IntelligenceSave = false,
+                WisdomSave = false,
+                CharismaSave = false,
+
+                Acrobatics = false,
+                AnimalHandling = false,
+                Arcana = true,
+                Athletics = false,
+                Deception = true,
+
+                History = true,
+                Intimidation = false,
+                Investigation = true,
+                Medicine = false,
+                Nature = false,
+
+                Perception = false,
+                Performance = false,
+                Persuasion = false,
+                Religion = true,
+                SleightOfHand = false,
+
+                Stealth = false,
+                Survival = false
+            };
+            IsProficientCM Expected = new IsProficientCM
+            {
+                Acrobatics = false,
+                AnimalHandling = false,
+                Arcana = true,
+                Athletics = false,
+                Deception = true,
+
+                History = true,
+                Intimidation = false,
+                Investigation = true,
+                Medicine = false,
+                Nature = false,
+
+                Perception = false,
+                Performance = false,
+                Persuasion = false,
+                Religion = true,
+                SleightOfHand = false,
+
+                Stealth = false,
+                Survival = false
+            };
+
+            using (var mockAccess = AutoMock.GetLoose())
+            {
+                mockAccess.Mock<IBaseUserAccess>()
+                    .Setup(x => x.GetProficiencyRecord(Caleb_id)).Returns(CalebRecord);
+
+                //Act
+                var access = mockAccess.Create<IBaseUserAccess>();
+                ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
+                var actual = toTest.buildIsProficientCM(Caleb_id);
+
+                //Assert
+                actual.Should().BeEquivalentTo(Expected);
+
+            }
+        }
+
+        [Test]
+        public void CMBUilder_buildSkillBonusCM()
+        {
+            //Arrange
+            var statBonus = new StatBonusCM
+            {
+                Strength = 0,
+                Dexterity = 1,
+                Constitution = 3,
+                Intelligence = 5,
+                Wisdom = -3,
+                Charisma = 3
+            };
+            var proficiencies = new IsProficientCM
+            {
+                Acrobatics = false,
+                AnimalHandling = false,
+                Arcana = true,
+                Athletics = false,
+                Deception = true,
+
+                History = true,
+                Intimidation = false,
+                Investigation = true,
+                Medicine = false,
+                Nature = false,
+
+                Perception = false,
+                Performance = false,
+                Persuasion = false,
+                Religion = true,
+                SleightOfHand = false,
+
+                Stealth = false,
+                Survival = false
+            };
+            int totalLevel = 12;
+            var expected = new SkillBonusCM
+            {
+                Acrobatics = 1,
+                AnimalHandling = -3,
+                Arcana = 8,
+                Athletics = 0,
+                Deception = 6,
+
+                History = 8,
+                Insight = -3,
+                Intimidation = 3,
+                Investigation = 8,
+                Medicine = -3,
+                Nature = 5,
+
+                Perception = -3,
+                Performance = 3,
+                Persuasion = 3,
+                Religion = 8,
+                SleightOfHand = 1,
+
+                Stealth = 1,
+                Survival = -3
+            };
+            var CalebStats = new Stats()
+            {
+                Character_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4"),
+                Strength = 10,
+                Dexterity = 12,
+                Constitution = 16,
+                Intelligence = 20,
+                Wisdom = 5,
+                Charisma = 16
+            };
+            using (var mockAccess = AutoMock.GetLoose())
+            {
+                var Caleb_id = Guid.Parse("361bd911-0702-437f-ab59-a29da0f9fba4");
+                mockAccess.Mock<IBaseUserAccess>()
+                    .Setup(x => x.GetStatsRecord(Caleb_id)).Returns(CalebStats);
+
+                //Act
+                //Act
+                var access = mockAccess.Create<IBaseUserAccess>();
+                ICharacterCMBuilder toTest = ProcessorFactory.GetCharacterCMBuilder(access);
+                var actual = toTest.buildSkillBonusCM(statBonus, totalLevel, proficiencies);
+
+                //Assert
+                actual.Should().BeEquivalentTo(expected);
+
+            }
+
         }
     }
 }

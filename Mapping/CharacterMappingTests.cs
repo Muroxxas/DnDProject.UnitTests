@@ -21,12 +21,7 @@ namespace DnDProject.UnitTests.Mapping
         [Test]
         public void CharacterMapper_MapCharacterVmToCharacter()
         {
-            CharacterVM vm = new CharacterVM();
-            vm.Name = "Bradley Norwood";
-
-            CharacterDM actual = CharacterMapper.mapCharacterVMToNewEntity(vm);
-
-            actual.Name.Should().Be(vm.Name);
+            throw new NotImplementedException();
         }
         [Test]
         public void CharacterMapper_MapCombatCMToHealthRecord()

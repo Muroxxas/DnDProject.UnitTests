@@ -18,6 +18,11 @@ namespace DnDProject.UnitTests.Processors
             return toTest;
 
         }
+        public static ICreateCharacter getCreateCharacterProcessor(IBaseUserAccess access, ICharacterCommonFunctions commons)
+        {
+            ICreateCharacter toTest = new CreateCharacter(access, commons);
+            return toTest;
+        }
         public static IUpdateCharacter getUpdateCharacterProcessor(IBaseUserAccess access)
         {
             return null;

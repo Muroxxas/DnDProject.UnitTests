@@ -587,7 +587,7 @@ namespace DnDProject.UnitTests.Repository
         }
 
         [Test]
-        public void SpellsRepository_CharacterLearnsSpell_ValidCall()
+        public void SpellsRepository_CharacterLearnsSpell_ByIDs_ValidCall()
         {
             //Arrange
             List<Spell_Character> KnownSpells = CreateTestData.GetListOfKnownSpells();
@@ -639,6 +639,41 @@ namespace DnDProject.UnitTests.Repository
 
                 //Assert
                 actual.Should().ContainEquivalentOf(EldritchBlast);
+            }
+        }
+
+        [Test]
+        public void SpellsRepository_CharacterLearnsSpell_ByRecord_ValidCall()
+        {
+            //Arrange
+            List<Spell_Character> KnownSpells = new List<Spell_Character>();
+            var mockKnownSpells = new Mock<DbSet<Spell_Character>>()
+                .SetupData(KnownSpells, o =>
+                {
+                    return KnownSpells.Single(x => x.Spell_id.CompareTo(o.First()) == 0);
+                });
+
+            Spell_Character expected = new Spell_Character
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Spell_id = Guid.Parse("45c1a8cc-2e3e-4e29-8eeb-f9fa0cc9e27e"),
+                isPrepared = true
+                
+            };
+
+            using (var mockContext = AutoMock.GetLoose())
+            {
+                mockContext.Mock<SpellsContext>()
+                    .Setup(x => x.KnownSpells).Returns(mockKnownSpells.Object);
+
+                //Act
+                ISpellsRepository toTest = mockContext.Create<SpellsRepository>();
+                toTest.CharacterLearnsSpell(expected);
+
+                var actual = KnownSpells.First();
+
+                //assert
+                actual.Should().BeEquivalentTo(expected);
             }
         }
         [Test]

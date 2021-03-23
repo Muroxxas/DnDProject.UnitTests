@@ -967,7 +967,7 @@ namespace DnDProject.UnitTests.UserAccess
             }
         }
         [Test]
-        public void BaseUserAccess_CharacterLearnsSpell_ValidCall()
+        public void BaseUserAccess_CharacterLearnsSpell_UsingIDs_ValidCall()
         {
             //Arrange
             List<Spell_Character> KnownSpells = CreateTestData.GetListOfKnownSpells();
@@ -1020,6 +1020,34 @@ namespace DnDProject.UnitTests.UserAccess
 
                 //Assert
                 actual.Should().ContainEquivalentOf(EldritchBlast);
+            }
+        }
+        [Test]
+        public void BaseUserAccess_CharacterLearnsSpell_UsingRecord_ValidCall()
+        {
+            //Arrange
+            List<Spell_Character> KnownSpells = new List<Spell_Character>();
+
+            var expected = new Spell_Character
+            {
+                Character_id = Guid.Parse("11111111-2222-3333-4444-555555555555"),
+                Spell_id = Guid.Parse("45c1a8cc-2e3e-4e29-8eeb-f9fa0cc9e27e"),
+                isPrepared = true
+            };
+
+            using (var mockWorker = AutoMock.GetLoose())
+            {
+                mockWorker.Mock<IUnitOfWork>()
+                    .Setup(x => x.Spells.CharacterLearnsSpell(It.IsAny<Spell_Character>()))
+                    .Callback<Spell_Character>((record) => KnownSpells.Add(record));
+
+                //Act
+                IUnitOfWork worker = mockWorker.Create<IUnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                toTest.CharacterLearnsSpell(expected);
+                var actual = KnownSpells.First();
+
+                actual.Should().BeEquivalentTo(expected);
             }
         }
         [Test]
@@ -1325,7 +1353,7 @@ namespace DnDProject.UnitTests.UserAccess
         }
 
         [Test]
-        public void BaseUserAccess_CharacterObtainsItem_ValidCall()
+        public void BaseUserAccess_CharacterObtainsItem_ByIDs_ValidCall()
         {
             //Arrange
             List<Character_Item> heldItems = new List<Character_Item>();
@@ -1363,6 +1391,38 @@ namespace DnDProject.UnitTests.UserAccess
 
                 //Assert
                 actual.Should().ContainEquivalentOf(Whisper);
+
+            }
+        }
+
+        [Test]
+        public void BaseUserAccess_CharacterObtainsItem_ByRecord_ValidCall()
+        {
+            List<Character_Item> heldItems = new List<Character_Item>();
+
+            var expected = new Character_Item
+            {
+                Character_id = Guid.Parse("e3a0faef-99da-4d15-bff1-b535a42b955c"),
+                Item_id = Guid.Parse("709135c3-6f89-46cb-80ae-4097b621e3b0"),
+                isEquipped = true,
+                IsAttuned = true
+            };
+
+            using (var mockWorker = AutoMock.GetLoose())
+            {
+                mockWorker.Mock<IUnitOfWork>()
+                    .Setup(x => x.Items.CharacterObtainsItem(It.IsAny<Character_Item>()))
+                    .Callback<Character_Item>((record) => heldItems.Add(record));
+
+                //Act
+                IUnitOfWork worker = mockWorker.Create<IUnitOfWork>();
+                IBaseUserAccess toTest = UserAccessFactory.getBaseUserAccess(worker);
+                toTest.CharacterObtainsItem(expected);
+
+                //Assert
+                var actual = heldItems.First();
+                actual.Should().BeEquivalentTo(expected);
+
 
             }
         }
